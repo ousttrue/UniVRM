@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="ja" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>v0.74.0: runtime スプリングボーンのスケール &mdash; UniVRM Programming Document  ドキュメント</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/translations.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="検索" href="../../search.html" />
+    <link rel="next" title="v0.75.0: mipmap" href="v0.75.0.html" />
+    <link rel="prev" title="v0.73.0: other permission url の修正" href="v0.73.0.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+[日本語] <a href="../../../en/release/068/v0.74.0.html">English</a>
+
+            <a href="../../index.html" class="icon icon-home"> UniVRM Programming Document
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../build.html">アプリケーションのビルド</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../implementation/index.html">実装メモ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gltf/index.html">glTF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../vrm0/index.html">VRM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../vrm1/index.html">VRM-1.0(β)</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Release</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../unitypackage.html">バージョン毎の UnityPackage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../055/index.html">～v0.55 (Unity-5.6 .NET-3.5) 推奨バージョンv0.55</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../056/index.html">v0.56～v0.67 (Unity-2018.4) 推奨バージョンv0.66</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">v0.68～v0.78 (Unity-2018.4) 開発版</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="index.html#releasenote">ReleaseNote</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="v0.68.0.html">v0.68.0: ImporterContext, ScriptedImporter(glb/gltf), remove DepthFirstScheduler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="v0.69.0.html">v0.69.0: MetallicRoughnessOcclusionテクスチャー</a></li>
+<li class="toctree-l4"><a class="reference internal" href="v0.70.0.html">v0.70.0: EncodeToPng に失敗するエラーを修正</a></li>
+<li class="toctree-l4"><a class="reference internal" href="v0.71.0.html">v0.71.0: fix Metallic または Occlusion テクスチャーエクスポートのバグ修正</a></li>
+<li class="toctree-l4"><a class="reference internal" href="v0.72.0.html">v0.72.0: Linearカラースペースの推奨, DividedVertexBuffer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="v0.73.0.html">v0.73.0: other permission url の修正</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">v0.74.0: runtime スプリングボーンのスケール</a></li>
+<li class="toctree-l4"><a class="reference internal" href="v0.75.0.html">v0.75.0: mipmap</a></li>
+<li class="toctree-l4"><a class="reference internal" href="v0.76.0.html">v0.76.0: Shader整理</a></li>
+<li class="toctree-l4"><a class="reference internal" href="v0.77.0.html">v0.77.0: RuntimeGltfInstance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="v0.78.0.html">v0.78.0: ScriptdImporter の改修</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="index.html#download">Download</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../079/index.html">v0.79～ (Unity-2019.4) 最新版をご利用ください</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">UniVRM Programming Document</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Release</a> &raquo;</li>
+          <li><a href="index.html">v0.68～v0.78 (Unity-2018.4) 開発版</a> &raquo;</li>
+      <li>v0.74.0: runtime スプリングボーンのスケール</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/vrm-c/UniVRM/blob/master/docs/release/068/v0.74.0.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="v0-74-0-runtime">
+<h1>v0.74.0: runtime スプリングボーンのスケール<a class="headerlink" href="#v0-74-0-runtime" title="このヘッドラインへのパーマリンク"></a></h1>
+<section id="v0-74-0-2021-05-11">
+<h2><a class="reference external" href="https://github.com/vrm-c/UniVRM/tree/v0.74.0">v0.74.0</a> (2021-05-11)<a class="headerlink" href="#v0-74-0-2021-05-11" title="このヘッドラインへのパーマリンク"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/vrm-c/UniVRM/releases/tag/v0.74.0">Release</a></p></li>
+<li><p><a class="reference external" href="https://github.com/vrm-c/UniVRM/milestone/36?closed=1">Milestone</a></p></li>
+</ul>
+<p><a class="reference external" href="https://github.com/vrm-c/UniVRM/compare/v0.73.0...v0.74.0">Full Changelog</a></p>
+</section>
+<section id="id1">
+<h2>主な変更<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク"></a></h2>
+<ul class="simple">
+<li><p>UniVRM-0.74.0 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/936">#936</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p><a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/922">#922</a> ランタイムロード後にスケールを変更して運用する場合に影響があります。(import/export には影響しない)</p>
+<ul>
+<li><p>スプリングボーンのスケールの動作を修正 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/935">#935</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+</ul>
+</li>
+<li><p>Add null check to MeshWithRenderer <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/925">#925</a> (<a class="reference external" href="https://github.com/oocytanb">oocytanb</a>)</p></li>
+<li><p><a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/909">#909</a></p>
+<ul>
+<li><p>mesh.vertices = 0 の場合にmeshとmaterialをexportしないように修正 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/918">#918</a> (<a class="reference external" href="https://github.com/hiroj">hiroj</a>)</p></li>
+<li><p>Feature/mesh validator <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/929">#929</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>add ValidationContext <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/931">#931</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+</ul>
+</li>
+<li><p>Fix/mesh export divided <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/912">#912</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+</ul>
+</section>
+<section id="id2">
+<h2>1.0<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク"></a></h2>
+<ul class="simple">
+<li><p>VRM1.0 で MToon の Import ができる <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/938">#938</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+<li><p>vrm1 の Extract 先を vrm0 と別になるように修正。 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/937">#937</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>VRM1.0 MToon の Texture をすべて Import できる <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/934">#934</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+<li><p>色プロパティのシリアライズ・デシリアライズ時に色空間をコードで明示 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/933">#933</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+<li><p>otherPermissionUrl と otherLiceneseUrl の両方が有効で内容が異なる場合はマイグレーションできない <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/917">#917</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>Generate MToon format.g.cs in VRMShaders <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/927">#927</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
+<li><p>VRM10SpringBoneColliderGroup の null 防御 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/926">#926</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>Feature10/update jsonschema 20210430 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/924">#924</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>ExpressionAvatar は 独立した ScriptableObject をやめる <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/916">#916</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>colliders.Add(nodeIndex); <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/905">#905</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>VRM10SelectorWindow <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/904">#904</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>Feature10/export dialog validator <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/903">#903</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>[1.0] Fix10/vrm extract <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/900">#900</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>[1.0]ジェネレーターの生成コード(Format)からUniJSON, UniGLTF依存を除去 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/886">#886</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>Feature10/rename importer exporter <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/911">#911</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>Feature10/constraint read write <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/906">#906</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>Feature10/export divided vertex buffer <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/913">#913</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="v0.73.0.html" class="btn btn-neutral float-left" title="v0.73.0: other permission url の修正" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="v0.75.0.html" class="btn btn-neutral float-right" title="v0.75.0: mipmap" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, VRM Consortium.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
