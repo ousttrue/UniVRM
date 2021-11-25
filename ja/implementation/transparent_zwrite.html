@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="ja" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UnlitTransparentZWrite &mdash; UniVRM Programming Document  ドキュメント</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/translations.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="検索" href="../search.html" />
+    <link rel="next" title="glTF" href="../gltf/index.html" />
+    <link rel="prev" title="ScriptedImporter の実装" href="scripted_importer.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+[日本語] <a href="../../en/implementation/transparent_zwrite.html">English</a>
+
+            <a href="../index.html" class="icon icon-home"> UniVRM Programming Document
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../build.html">アプリケーションのビルド</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">実装メモ</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="runtime_resource_management.html">Runtime のリソース管理について</a></li>
+<li class="toctree-l2"><a class="reference internal" href="texture_manipulation.html">Texture関連</a></li>
+<li class="toctree-l2"><a class="reference internal" href="coordinate.html">座標系の変換</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fast_spring_bone.html">FastSpringBoneについて</a></li>
+<li class="toctree-l2"><a class="reference internal" href="first_person.html">VRアプリケーションの FirstPerson 設定による Renderer の可視制御</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripted_importer.html">ScriptedImporter の実装</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">UnlitTransparentZWrite</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#mtoon-unlit">MToon を Unlit 的に設定する</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../gltf/index.html">glTF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../vrm0/index.html">VRM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../vrm1/index.html">VRM-1.0(β)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../release/index.html">Release</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">UniVRM Programming Document</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">実装メモ</a> &raquo;</li>
+      <li>UnlitTransparentZWrite</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/vrm-c/UniVRM/blob/master/docs/implementation/transparent_zwrite.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="unlittransparentzwrite">
+<h1>UnlitTransparentZWrite<a class="headerlink" href="#unlittransparentzwrite" title="このヘッドラインへのパーマリンク"></a></h1>
+<p>対応状況。</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>UniVRM</p></th>
+<th class="head"><p>export</p></th>
+<th class="head"><p>import</p></th>
+<th class="head"><p>comment</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p></p></td>
+<td><p>✅</p></td>
+<td><p>✅</p></td>
+<td><p>GLTFの仕様外で MToon でもないので仕様の無い存在に。</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../release/055/v0.44.html"><span class="doc">v0.44</span></a></p></td>
+<td><p>❌</p></td>
+<td><p>✅</p></td>
+<td><p>MToon のみを extensions.VRM に記述し、 <code class="docutils literal notranslate"><span class="pre">PBR</span></code> と <code class="docutils literal notranslate"><span class="pre">Unilt</span></code> は GLTF として記録する。</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../release/068/v0.76.0.html"><span class="doc">v0.76</span></a></p></td>
+<td><p>❌</p></td>
+<td><p>❌</p></td>
+<td><p><a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1004">#1004</a> 仕様外のため削除。import すると MToon になるが調整されていない。</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../release/079/v0.85.0.html"><span class="doc">v0.85</span></a></p></td>
+<td><p>❌</p></td>
+<td><p>🔺</p></td>
+<td><p><a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1248">#1248</a> import すると MToon になる。</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../release/079/v0.88.0.html"><span class="doc">v0.88</span></a></p></td>
+<td><p>❌</p></td>
+<td><p>✅</p></td>
+<td><p><a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1331">#1331</a> MToon 変換を見直し。</p></td>
+</tr>
+</tbody>
+</table>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">UniVRM-0.75</span></code> 以前はロードできます。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">UniVRM-0.88</span></code> 以降は見た目が同様になるように MToon に変換されます。</p></li>
+<li><p>新規に <code class="docutils literal notranslate"><span class="pre">ZWriteTransparent</span></code> にしたい場合は、 <code class="docutils literal notranslate"><span class="pre">MToon</span></code> を使用してください。</p></li>
+</ul>
+<section id="mtoon-unlit">
+<h2>MToon を Unlit 的に設定する<a class="headerlink" href="#mtoon-unlit" title="このヘッドラインへのパーマリンク"></a></h2>
+<p>Emission を使うのがこつです。</p>
+<ul class="simple">
+<li><p>_MainTex: 元の _MainTex</p></li>
+<li><p>_Color: (0, 0, 0, 1)</p></li>
+<li><p>_ShadeTex: null</p></li>
+<li><p>_ShadeColor: (0, 0, 0, 1)</p></li>
+<li><p>_EmissiveMap: 元の _MainTex</p></li>
+<li><p>_Emission: (1, 1, 1, 1)</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="scripted_importer.html" class="btn btn-neutral float-left" title="ScriptedImporter の実装" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../gltf/index.html" class="btn btn-neutral float-right" title="glTF" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, VRM Consortium.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
