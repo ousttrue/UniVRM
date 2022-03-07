@@ -181,6 +181,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../api/0_87_runtime_import.html"><code class="docutils literal notranslate"><span class="pre">v0.87</span></code> RuntimeImport 非同期ロード</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/0_95_dispose.html"><code class="docutils literal notranslate"><span class="pre">v0.95</span></code> GltfData.Dispose</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/0_95_highlevel.html"><code class="docutils literal notranslate"><span class="pre">v0.95</span></code> High-level API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/0_96_1_use_gamma_colorspace.html"><code class="docutils literal notranslate"><span class="pre">v0.96.1</span></code> use gamma color space</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/vrm1_runtime_load.html">RuntimeLoad</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/vrm1_get_humanoid.html">🚧Humanoid</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/vrm1_expression.html">🚧Expression</a></li>
@@ -270,8 +271,12 @@
 <li class="toctree-l3"><a class="reference internal" href="v0.93.0.html">v0.93.0: Road to 1.0.</a></li>
 <li class="toctree-l3"><a class="reference internal" href="v0.94.0.html">v0.94.0: Road to 1.0.</a></li>
 <li class="toctree-l3"><a class="reference internal" href="v0.95.1.html">v0.95.1: GltfData.Dispose</a></li>
+<li class="toctree-l3"><a class="reference internal" href="v0.96.0.html">v0.96.0: ⚠️ ReadMesh</a></li>
+<li class="toctree-l3"><a class="reference internal" href="v0.96.1.html">v0.96.1: ⚠️ build/exporter bug fix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="v0.96.2.html">v0.96.2: fix BlendShape Import bug</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../how_to_release.html">リリース作業手順</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../unihumanoid/index.html">UniHumanoid</a></li>
@@ -309,26 +314,26 @@
           <section class="tex2jax_ignore mathjax_ignore" id="v0-90-0-nativearray">
 <h1>v0.90.0: NativeArray<a class="headerlink" href="#v0-90-0-nativearray" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1373">#1373</a>] New Mesh APIを利用することで、GPUへのMeshアップロードコストを削減</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1373">#1373</a>] Use new mesh API to reduce mesh upload costs to GPU</p></li>
 </ul>
 <section id="id1">
 <h2>1.0<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1387">#1387</a>] [1.0] ScriptableObject VRM10Expression の MorphTargetBinding.Weight の値域を 0-1 に修正</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1374">#1374</a>] [1.0] indices が 65535 を超える場合に indexFormat をセットする</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1387">#1387</a>] [1.0] Fix the range of the MorphTargetBinding.Weight of ScriptableObject VRM10Expression to 0-1</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1374">#1374</a>] [1.0] Fix indexFormat if indices are over 65535</p></li>
 </ul>
 </section>
 <section id="id2">
-<h2>Other<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<h2>Other Changes<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1394">#1394</a>] Colorsのnull考慮漏れを修正</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1392">#1392</a>] ビルド時の参照エラーを修正</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1394">#1394</a>] Fix an occurred error when MeshContext’s Colors is null</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1392">#1392</a>] Fix build errors</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1391">#1391</a>] UniVRM-0.90.0</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1385">#1385</a>] 未知の material をエクスポートするとエラーになるのを回避</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1376">#1376</a>] VRM1.0についてもNew Mesh APIを使う</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1385">#1385</a>] Avoid errors when exporting unrecognized materials</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1376">#1376</a>] Apply new mesh API to VRM1.0</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1375">#1375</a>] UniVRM-0.89.1</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1372">#1372</a>] MeshContextのListをIReadOnlyListに変更・その他フォーマット</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1371">#1371</a>] MeshImporterからMeshContextを分離</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1372">#1372</a>] Change MeshContext’s List to <code class="docutils literal notranslate"><span class="pre">IReadOnlyList</span></code></p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1371">#1371</a>] Separate <code class="docutils literal notranslate"><span class="pre">MeshContext</span></code> from <code class="docutils literal notranslate"><span class="pre">MeshImporter</span></code></p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1370">#1370</a>] fix download</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1369">#1369</a>] doc/v0 89 0</p></li>
 </ul>
@@ -388,7 +393,7 @@
             <ul>
 <li><a class="reference internal" href="#">v0.90.0: NativeArray</a><ul>
 <li><a class="reference internal" href="#id1">1.0</a></li>
-<li><a class="reference internal" href="#id2">Other</a></li>
+<li><a class="reference internal" href="#id2">Other Changes</a></li>
 </ul>
 </li>
 </ul>

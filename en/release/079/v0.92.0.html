@@ -181,6 +181,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../api/0_87_runtime_import.html"><code class="docutils literal notranslate"><span class="pre">v0.87</span></code> RuntimeImport 非同期ロード</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/0_95_dispose.html"><code class="docutils literal notranslate"><span class="pre">v0.95</span></code> GltfData.Dispose</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/0_95_highlevel.html"><code class="docutils literal notranslate"><span class="pre">v0.95</span></code> High-level API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/0_96_1_use_gamma_colorspace.html"><code class="docutils literal notranslate"><span class="pre">v0.96.1</span></code> use gamma color space</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/vrm1_runtime_load.html">RuntimeLoad</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/vrm1_get_humanoid.html">🚧Humanoid</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/vrm1_expression.html">🚧Expression</a></li>
@@ -270,8 +271,12 @@
 <li class="toctree-l3"><a class="reference internal" href="v0.93.0.html">v0.93.0: Road to 1.0.</a></li>
 <li class="toctree-l3"><a class="reference internal" href="v0.94.0.html">v0.94.0: Road to 1.0.</a></li>
 <li class="toctree-l3"><a class="reference internal" href="v0.95.1.html">v0.95.1: GltfData.Dispose</a></li>
+<li class="toctree-l3"><a class="reference internal" href="v0.96.0.html">v0.96.0: ⚠️ ReadMesh</a></li>
+<li class="toctree-l3"><a class="reference internal" href="v0.96.1.html">v0.96.1: ⚠️ build/exporter bug fix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="v0.96.2.html">v0.96.2: fix BlendShape Import bug</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../how_to_release.html">リリース作業手順</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../unihumanoid/index.html">UniHumanoid</a></li>
@@ -309,22 +314,21 @@
           <section class="tex2jax_ignore mathjax_ignore" id="v0-92-0-1-0">
 <h1>v0.92.0: Road to 1.0.<a class="headerlink" href="#v0-92-0-1-0" title="Permalink to this headline">¶</a></h1>
 <section id="id1">
-<h2>[1.0] 正規化しない<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h2>[1.0] Model Normalization<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1429">#1429</a>] [1.0][Importer] Import 時の正規化を実装</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1428">#1428</a>] [1.0] Export ダイアログは正規化しない</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1429">#1429</a>] [1.0][Importer] Implement the model normalization during import</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1428">#1428</a>] [1.0] Export the model without normalization</p></li>
 </ul>
 </section>
 <section id="vrm-0-x">
 <h2>VRM-0.x<a class="headerlink" href="#vrm-0-x" title="Permalink to this headline">¶</a></h2>
-<p>meta オブジェクトの置き換え機能の修正。
-シーンインスタンス毎に異なる meta オブジェクトを設定できます。</p>
+<p>Fixed the feature of meta object replacement</p>
 <ul class="simple">
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1423">#1423</a>] meta の PropertyField に対するオブジェクト置き換えを有効にする</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1423">#1423</a>] Enable object replacement for meta’s PropertyField</p></li>
 </ul>
 </section>
 <section id="id2">
-<h2>その他<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<h2>Other Changes<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1433">#1433</a>] Fix/exporter extensionused</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1432">#1432</a>] Version/v0 92 0</p></li>
@@ -387,9 +391,9 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">v0.92.0: Road to 1.0.</a><ul>
-<li><a class="reference internal" href="#id1">[1.0] 正規化しない</a></li>
+<li><a class="reference internal" href="#id1">[1.0] Model Normalization</a></li>
 <li><a class="reference internal" href="#vrm-0-x">VRM-0.x</a></li>
-<li><a class="reference internal" href="#id2">その他</a></li>
+<li><a class="reference internal" href="#id2">Other Changes</a></li>
 </ul>
 </li>
 </ul>

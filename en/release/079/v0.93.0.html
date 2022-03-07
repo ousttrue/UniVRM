@@ -181,6 +181,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../api/0_87_runtime_import.html"><code class="docutils literal notranslate"><span class="pre">v0.87</span></code> RuntimeImport 非同期ロード</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/0_95_dispose.html"><code class="docutils literal notranslate"><span class="pre">v0.95</span></code> GltfData.Dispose</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/0_95_highlevel.html"><code class="docutils literal notranslate"><span class="pre">v0.95</span></code> High-level API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/0_96_1_use_gamma_colorspace.html"><code class="docutils literal notranslate"><span class="pre">v0.96.1</span></code> use gamma color space</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/vrm1_runtime_load.html">RuntimeLoad</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/vrm1_get_humanoid.html">🚧Humanoid</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/vrm1_expression.html">🚧Expression</a></li>
@@ -270,8 +271,12 @@
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">v0.93.0: Road to 1.0.</a></li>
 <li class="toctree-l3"><a class="reference internal" href="v0.94.0.html">v0.94.0: Road to 1.0.</a></li>
 <li class="toctree-l3"><a class="reference internal" href="v0.95.1.html">v0.95.1: GltfData.Dispose</a></li>
+<li class="toctree-l3"><a class="reference internal" href="v0.96.0.html">v0.96.0: ⚠️ ReadMesh</a></li>
+<li class="toctree-l3"><a class="reference internal" href="v0.96.1.html">v0.96.1: ⚠️ build/exporter bug fix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="v0.96.2.html">v0.96.2: fix BlendShape Import bug</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../how_to_release.html">リリース作業手順</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../unihumanoid/index.html">UniHumanoid</a></li>
@@ -312,13 +317,13 @@
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1452">#1452</a>] UniVRM-0.93.0</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1446">#1446</a>] [1.0][Constraint] rotation local to localのみに</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1444">#1444</a>] Fix/material has vertex color</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1443">#1443</a>] [1.0] SpringBone Joint のJSONキー省略時にデフォルト値を補う</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1445">#1445</a>] MeshVertexのdefault colorをwhiteにした</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1440">#1440</a>] FirstPerson 設定が無い Renderer のデフォルト値を auto にする</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1443">#1443</a>] [1.0] Add default values to those unset components in SpringBone Joint</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1445">#1445</a>] Set <code class="docutils literal notranslate"><span class="pre">MeshVertex</span></code>’s default color to white</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1440">#1440</a>] If a renderer’s <code class="docutils literal notranslate"><span class="pre">FirstPerson</span></code> is not set up, <code class="docutils literal notranslate"><span class="pre">auto</span></code> will be assigned</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1439">#1439</a>] default material</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1437">#1437</a>] Can export metallic roughness occlusion correct.</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1436">#1436</a>] Marshal.Copy で問題が発生する前に throw する</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1435">#1435</a>] ランタイム正規化のサンプルとドキュメント</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1436">#1436</a>] Implement safe ways to use <code class="docutils literal notranslate"><span class="pre">Marshal.Copy</span></code></p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1435">#1435</a>] Add runtime normalization samples and documents</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1434">#1434</a>] release/079/v0.92.0.md</p></li>
 </ul>
 </section>
