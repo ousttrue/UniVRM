@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="検索" href="../search.html" /><link rel="next" title="🚧LookAt" href="vrm1_lookat.html" /><link rel="prev" title="ControlRig 正規化されていないモデルを操作する" href="vrm1_controlrig.html" />
+<link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="検索" href="../search.html" /><link rel="next" title="RuntimeLoad" href="vrm1_load.html" /><link rel="prev" title="Folder 構成" href="folder_structure.html" />
 
     <meta name="generator" content="sphinx-4.3.2, furo 2022.01.02"/>
-        <title>🚧Expression - UniVRM Programming ドキュメント</title>
+        <title>API更新 - UniVRM Programming ドキュメント</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=df49af52631e7917044a9c21a57f7b83170a6dd0" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=fade93df149f7c5fedb3ff897f799dc7d283b420" />
@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -144,7 +144,7 @@
     <div class="sidebar-container">
       
       <div class="sidebar-sticky"><div class="sidebar-scroll">
-[日本語] <a href="../../en/vrm1/vrm1_expression.html">English</a><a class="sidebar-brand" href="../index.html">
+[日本語] <a href="../../en/vrm1/api_update.html">English</a><a class="sidebar-brand" href="../index.html">
   
   
   <span class="sidebar-brand-text">UniVRM Programming  ドキュメント</span>
@@ -195,10 +195,10 @@
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">VRM-1.0 の API</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="folder_structure.html">Folder 構成</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">API更新</a></li>
 <li class="toctree-l2"><a class="reference internal" href="vrm1_load.html">RuntimeLoad</a></li>
 <li class="toctree-l2"><a class="reference internal" href="vrm1_controlrig.html">ControlRig 正規化されていないモデルを操作する</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">🚧Expression</a></li>
-<li class="toctree-l2"><a class="reference internal" href="vrm1_lookat.html">🚧LookAt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="vrm1_firstperson.html">FirstPerson</a></li>
 </ul>
 </li>
@@ -287,6 +287,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../release/079/v0.102.0.html#id1">1.0</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../release/079/v0.102.0.html#other">other</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../release/079/v0.103.0.html">v0.102.0..v0.103.0: VRM-1.0 RC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../release/079/v0.104.0.html">v0.103.0..v0.104.0: vrm-1.0</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../release/how_to_release.html">リリース作業手順</a></li>
@@ -318,32 +319,89 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section class="tex2jax_ignore mathjax_ignore" id="expression">
-<h1>🚧Expression<a class="headerlink" href="#expression" title="このヘッドラインへのパーマリンク">¶</a></h1>
-<p>表情周りの操作方法。</p>
-<blockquote>
-<div><p>VRM-1.0 の <code class="docutils literal notranslate"><span class="pre">BlendShapeProxy</span></code> は、<code class="docutils literal notranslate"><span class="pre">Vrm10Instance.Expression</span></code> になります。</p>
-</div></blockquote>
-<p>VRM-0.X の例</p>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">void</span><span class="w"> </span><span class="nf">SetExpression</span><span class="p">(</span><span class="n">GameObject</span><span class="w"> </span><span class="n">root</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="kt">var</span><span class="w"> </span><span class="n">controller</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">root</span><span class="p">.</span><span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">BlendShapeProxy</span><span class="p">&gt;();</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+          <section class="tex2jax_ignore mathjax_ignore" id="api">
+<h1>API更新<a class="headerlink" href="#api" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">VRM-1.0</span></code> ではフォーマットの更新とともに、 <code class="docutils literal notranslate"><span class="pre">Unity</span> <span class="pre">Component</span></code> が変わります。</p>
+<section id="load">
+<h2>Load<a class="headerlink" href="#load" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">VRM-0.X</span></code> をロードして新しいコンポーネントで動かすことができます。
+この場合 <code class="docutils literal notranslate"><span class="pre">VRM-0</span></code> ライセンスで扱ってください。</p>
+<div class="highlight-csharpharp notranslate"><div class="highlight"><pre><span></span>RuntimeGltfInstance instance = await VrmUtility.LoadAsync(path);
 </pre></div>
 </div>
-<p>VRM-1.0 の例</p>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">void</span><span class="w"> </span><span class="nf">SetExpression</span><span class="p">(</span><span class="n">GameObject</span><span class="w"> </span><span class="n">root</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="kt">var</span><span class="w"> </span><span class="n">controller</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">root</span><span class="p">.</span><span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">Vrm10Instance</span><span class="p">&gt;();</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<p>👇</p>
+<div class="highlight-csharpharp notranslate"><div class="highlight"><pre><span></span>Vrm10Instance vrm10Instance = await Vrm10.LoadPathAsync(path);
 </pre></div>
 </div>
+<p><code class="docutils literal notranslate"><span class="pre">VRM-0.x</span></code> から設計を変更して <code class="docutils literal notranslate"><span class="pre">Vrm10Instance</span></code> にすべての情報を格納する方式になりました。</p>
+<div class="info admonition">
+<p class="admonition-title">毎フレーム決まった順番で更新します。</p>
+<ol class="arabic simple">
+<li><p>Control Rig</p></li>
+<li><p>Constraints</p></li>
+<li><p>Gaze control</p></li>
+<li><p>Expression</p></li>
+</ol>
+<p><a class="reference external" href="https://github.com/vrm-c/UniVRM/blob/master/Assets/VRM10/Runtime/Components/Vrm10Runtime/Vrm10Runtime.csharp#L170">https://github.com/vrm-c/UniVRM/blob/master/Assets/VRM10/Runtime/Components/Vrm10Runtime/Vrm10Runtime.csharp#L170</a></p>
+</div>
+</section>
+<section id="expression">
+<h2>Expression<a class="headerlink" href="#expression" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<div class="info admonition">
+<p class="admonition-title">VRMBlendShapeProxy は Vrm10Instance.Runtime.Expression になりました。</p>
+<p>ImmediatelySetValue と AccumulateValue は、SetWeight に一本化されました。
+ImmediatelySetValue は無くなりました。</p>
+</div>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">proxy</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">root</span><span class="p">.</span><span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">VRMBlendShapeProxy</span><span class="p">&gt;();</span><span class="w"></span>
+<span class="n">proxy</span><span class="p">.</span><span class="n">ImmediatelySetValue</span><span class="p">(</span><span class="n">BlendShapeKey</span><span class="p">.</span><span class="n">CreateFromPreset</span><span class="p">(</span><span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">A</span><span class="p">),</span><span class="w"> </span><span class="m">0.5f</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+<p>👇</p>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">vrm10</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">root</span><span class="p">.</span><span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">Vrm10Instance</span><span class="p">&gt;();</span><span class="w"></span>
+<span class="n">vrm10</span><span class="p">.</span><span class="n">Runtime</span><span class="p">.</span><span class="n">Expression</span><span class="p">.</span><span class="n">SetWeight</span><span class="p">(</span><span class="n">ExpressionKey</span><span class="p">.</span><span class="n">CreateFromPreset</span><span class="p">(</span><span class="n">ExpressionPreset</span><span class="p">.</span><span class="n">aa</span><span class="p">),</span><span class="w"> </span><span class="m">0.5f</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+<section id="lookat">
+<h2>LookAt<a class="headerlink" href="#lookat" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<div class="info admonition">
+<p class="admonition-title">VRMLookAt は Vrm10Instance.Runtime.LookAt になりました。</p>
+<p>vrm10.Gaze.position か vrm10.Runtime.LookAt.SetLookAtYawPitch で予め更新しておいた値が、
+後で vrm10.Runtime により適用されます。</p>
+</div>
+<section id="gaze">
+<h3>Gaze<a class="headerlink" href="#gaze" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">lookAt</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">root</span><span class="p">.</span><span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">VRMLookAt</span><span class="p">&gt;();</span><span class="w"></span>
+<span class="n">lookAt</span><span class="p">.</span><span class="n">LookWorldPosition</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">Vector3</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">));</span><span class="w"></span>
+</pre></div>
+</div>
+<p>👇</p>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">vrm10</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">root</span><span class="p">.</span><span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">Vrm10Instance</span><span class="p">&gt;();</span><span class="w"></span>
+<span class="n">vrm10</span><span class="p">.</span><span class="n">LookAtTargetType</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">LookAtTargetTypes</span><span class="p">.</span><span class="n">CalcYawPitchToGaze</span><span class="p">;</span><span class="w"></span>
+<span class="n">vrm10</span><span class="p">.</span><span class="n">Gaze</span><span class="p">.</span><span class="n">position</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Vector3</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+<section id="setyawpitch">
+<h3>SetYawPitch<a class="headerlink" href="#setyawpitch" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">lookAt</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">root</span><span class="p">.</span><span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">VRMLookAt</span><span class="p">&gt;();</span><span class="w"></span>
+<span class="n">lookAt</span><span class="p">.</span><span class="n">ApplyRotations</span><span class="p">(</span><span class="n">yaw</span><span class="p">,</span><span class="w"> </span><span class="n">pitch</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+<p>👇</p>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">vrm10</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">root</span><span class="p">.</span><span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">Vrm10Instance</span><span class="p">&gt;();</span><span class="w"></span>
+<span class="n">vrm10</span><span class="p">.</span><span class="n">LookAtTargetType</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">LookAtTargetTypes</span><span class="p">.</span><span class="n">SetYawPitch</span><span class="p">;</span><span class="w"></span>
+<span class="n">vrm10</span><span class="p">.</span><span class="n">Runtime</span><span class="p">.</span><span class="n">LookAt</span><span class="p">.</span><span class="n">SetLookAtYawPitch</span><span class="p">(</span><span class="n">yaw</span><span class="p">,</span><span class="w"> </span><span class="n">pitch</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+</section>
 </section>
 
         </article>
@@ -351,23 +409,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="vrm1_lookat.html">
+          <a class="next-page" href="vrm1_load.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">🚧LookAt</div>
+                <div class="title">RuntimeLoad</div>
               </div>
               <svg><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="vrm1_controlrig.html">
+          <a class="prev-page" href="folder_structure.html">
               <svg><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">ControlRig 正規化されていないモデルを操作する</div>
+                <div class="title">Folder 構成</div>
                 
               </div>
             </a>
@@ -377,7 +435,7 @@
               Copyright &#169; 2021, VRM Consortium |
           Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
           <a href="https://github.com/pradyunsg/furo">Furo theme</a>.
-            | <a class="muted-link" href="../_sources/vrm1/vrm1_expression.md.txt"
+            | <a class="muted-link" href="../_sources/vrm1/api_update.md.txt"
                rel="nofollow">
               ソースコードを表示
             </a>
@@ -385,8 +443,33 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            コンテンツ
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">API更新</a><ul>
+<li><a class="reference internal" href="#load">Load</a></li>
+<li><a class="reference internal" href="#expression">Expression</a></li>
+<li><a class="reference internal" href="#lookat">LookAt</a><ul>
+<li><a class="reference internal" href="#gaze">Gaze</a></li>
+<li><a class="reference internal" href="#setyawpitch">SetYawPitch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
