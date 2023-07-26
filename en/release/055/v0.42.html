@@ -172,6 +172,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../api/0_58_blendshape.html"><code class="docutils literal notranslate"><span class="pre">v0.58</span></code> BlendShapeProxy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/how_to_impl_extension.html"><code class="docutils literal notranslate"><span class="pre">v0.63.2</span></code> glTF拡張の実装</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/0_68_runtime_import.html"><code class="docutils literal notranslate"><span class="pre">v0.68</span></code> RuntimeImport DisposeOnGameObjectDestroyed(obsolete)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/0_76_texture_deserializer.html"><code class="docutils literal notranslate"><span class="pre">v0.76</span></code> ITextureDeserializer(Texture Loader)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/0_77_runtime_import.html"><code class="docutils literal notranslate"><span class="pre">v0.77</span></code> RuntimeImport RuntimeGltfInstance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/0_79_runtime_import.html"><code class="docutils literal notranslate"><span class="pre">v0.79</span></code> RuntimeImport GltfData</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/0_82_glb_import.html"><code class="docutils literal notranslate"><span class="pre">v0.82.1</span></code> GlbImport GltfData</a></li>
@@ -183,7 +184,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../api/0_95_highlevel.html"><code class="docutils literal notranslate"><span class="pre">v0.95</span></code> High-level API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/0_96_1_use_gamma_colorspace.html"><code class="docutils literal notranslate"><span class="pre">v0.96.1</span></code> use gamma color space</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/0_106_spring_manual_update.html"><code class="docutils literal notranslate"><span class="pre">v0.106</span></code> SpringBone の手動更新</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/0_76_texture_deserializer.html"><code class="docutils literal notranslate"><span class="pre">v0.76</span></code> ITextureDeserializer(Texture Loader)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/0_112_urp.html"><code class="docutils literal notranslate"><span class="pre">v0.112</span></code> MToon の URP 対応</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../build.html">Build Application</a></li>
@@ -354,11 +355,11 @@ If you are using UniVRM to import VRM data, please update UniVRM to the latest v
 <h2>UV Bugs Fix:<a class="headerlink" href="#uv-bugs-fix" title="Permalink to this headline">¶</a></h2>
 <p>In v0.41 and the earlier versions, converting UV between Unity and GLTF was incorrect.</p>
 <p>Before</p>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">converted_uv</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Vec2</span><span class="p">(</span><span class="n">uv</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="p">-</span><span class="n">uv</span><span class="p">.</span><span class="n">y</span><span class="p">);</span><span class="w">　</span><span class="c1">// value becomes negative</span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">converted_uv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Vec2</span><span class="p">(</span><span class="n">uv</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="n">uv</span><span class="p">.</span><span class="n">y</span><span class="p">);</span><span class="w">　</span><span class="c1">// value becomes negative</span>
 </pre></div>
 </div>
 <p>After</p>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">converted_uv</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Vec2</span><span class="p">(</span><span class="n">uv</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="m">1.0f</span><span class="p">-</span><span class="n">uv</span><span class="p">.</span><span class="n">y</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">converted_uv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Vec2</span><span class="p">(</span><span class="n">uv</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="m">1.0f</span><span class="o">-</span><span class="n">uv</span><span class="p">.</span><span class="n">y</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>This change influences both import and export.</p>
@@ -420,12 +421,12 @@ It influences the use of normal map.</p>
 <h3><code class="docutils literal notranslate"><span class="pre">/bufferViews/*/byteStride</span></code>will not output<a class="headerlink" href="#bufferviews-bytestridewill-not-output" title="Permalink to this headline">¶</a></h3>
 <p>It seems necessary for outputting OpenGL’s interleaved vbo format:</p>
 <div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Example of interleaved format</span>
-<span class="k">struct</span><span class="w"> </span><span class="nc">Vertex</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="k">public</span><span class="w"> </span><span class="n">Vector3</span><span class="w"> </span><span class="n">Position</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="k">public</span><span class="w"> </span><span class="n">Vector3</span><span class="w"> </span><span class="n">Normal</span><span class="p">;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
-<span class="n">Vertex</span><span class="p">[]</span><span class="w"> </span><span class="n">Vertices</span><span class="p">;</span><span class="w"></span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">Vertex</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">public</span><span class="w"> </span><span class="n">Vector3</span><span class="w"> </span><span class="n">Position</span><span class="p">;</span>
+<span class="w">  </span><span class="k">public</span><span class="w"> </span><span class="n">Vector3</span><span class="w"> </span><span class="n">Normal</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="n">Vertex</span><span class="p">[]</span><span class="w"> </span><span class="n">Vertices</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>Since UniGLTF outputs separate arrays for each vertex attribute, ByteStride was unnecessary.</p>

@@ -171,6 +171,7 @@
 <li class="toctree-l2"><a class="reference internal" href="0_58_blendshape.html"><code class="docutils literal notranslate"><span class="pre">v0.58</span></code> BlendShapeProxy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="how_to_impl_extension.html"><code class="docutils literal notranslate"><span class="pre">v0.63.2</span></code> glTF拡張の実装</a></li>
 <li class="toctree-l2"><a class="reference internal" href="0_68_runtime_import.html"><code class="docutils literal notranslate"><span class="pre">v0.68</span></code> RuntimeImport DisposeOnGameObjectDestroyed(obsolete)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="0_76_texture_deserializer.html"><code class="docutils literal notranslate"><span class="pre">v0.76</span></code> ITextureDeserializer(テクスチャーローダー)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="0_77_runtime_import.html"><code class="docutils literal notranslate"><span class="pre">v0.77</span></code> RuntimeImport RuntimeGltfInstance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="0_79_runtime_import.html"><code class="docutils literal notranslate"><span class="pre">v0.79</span></code> RuntimeImport GltfData</a></li>
 <li class="toctree-l2"><a class="reference internal" href="0_82_glb_import.html"><code class="docutils literal notranslate"><span class="pre">v0.82.1</span></code> GlbImport GltfData</a></li>
@@ -182,7 +183,7 @@
 <li class="toctree-l2"><a class="reference internal" href="0_95_highlevel.html"><code class="docutils literal notranslate"><span class="pre">v0.95</span></code> 簡単API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="0_96_1_use_gamma_colorspace.html"><code class="docutils literal notranslate"><span class="pre">v0.96.1</span></code> ガンマ カラースペースを使う</a></li>
 <li class="toctree-l2"><a class="reference internal" href="0_106_spring_manual_update.html"><code class="docutils literal notranslate"><span class="pre">v0.106</span></code> SpringBone の手動更新</a></li>
-<li class="toctree-l2"><a class="reference internal" href="0_76_texture_deserializer.html"><code class="docutils literal notranslate"><span class="pre">v0.76</span></code> ITextureDeserializer(テクスチャーローダー)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="0_112_urp.html"><code class="docutils literal notranslate"><span class="pre">v0.112</span></code> MToon の URP 対応</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../build.html">アプリケーションのビルド</a></li>
@@ -346,13 +347,13 @@
 <section id="id1">
 <h2>アプリケーションに追加の描画レイヤーを指定する<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h2>
 <p>定数で以下のレイヤーを定義しています。</p>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">public</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">VRMFirstPerson</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">MonoBehaviour</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">FIRSTPERSON_ONLY_LAYER</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="m">9</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">THIRDPERSON_ONLY_LAYER</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="m">10</span><span class="p">;</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">public</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">VRMFirstPerson</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">MonoBehaviour</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">FIRSTPERSON_ONLY_LAYER</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">9</span><span class="p">;</span>
+<span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">THIRDPERSON_ONLY_LAYER</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10</span><span class="p">;</span>
 
 <span class="w">    </span><span class="c1">// 省略</span>
-<span class="p">}</span><span class="w"></span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <div class="table-wrapper"><table class="colwidths-auto docutils align-default">
@@ -372,47 +373,47 @@
 <li><p>VRMFirstPerson.Setupの呼び出し</p></li>
 <li><p>一人称カメラとその他のカメラに対してLayerMask</p></li>
 </ul>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="nn">System.Collections</span><span class="p">;</span><span class="w"></span>
-<span class="k">using</span><span class="w"> </span><span class="nn">System.Collections.Generic</span><span class="p">;</span><span class="w"></span>
-<span class="k">using</span><span class="w"> </span><span class="nn">UnityEngine</span><span class="p">;</span><span class="w"></span>
-<span class="k">using</span><span class="w"> </span><span class="nn">VRM</span><span class="p">;</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="nn">System.Collections</span><span class="p">;</span>
+<span class="k">using</span><span class="w"> </span><span class="nn">System.Collections.Generic</span><span class="p">;</span>
+<span class="k">using</span><span class="w"> </span><span class="nn">UnityEngine</span><span class="p">;</span>
+<span class="k">using</span><span class="w"> </span><span class="nn">VRM</span><span class="p">;</span>
 
-<span class="k">public</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">SetupExample</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">MonoBehaviour</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="na">[SerializeField]</span><span class="w"></span>
+<span class="k">public</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">SetupExample</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">MonoBehaviour</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="na">[SerializeField]</span>
 <span class="w">    </span><span class="n">Camera</span><span class="w"> </span><span class="n">m_firstPersonCamera</span><span class="p">;</span><span class="w"> </span><span class="c1">// HMDのカメラ</span>
 
-<span class="w">    </span><span class="na">[SerializeField]</span><span class="w"></span>
+<span class="w">    </span><span class="na">[SerializeField]</span>
 <span class="w">    </span><span class="n">LayerMask</span><span class="w"> </span><span class="n">m_firstPersonMask</span><span class="p">;</span><span class="w"> </span><span class="c1">// HMDのカメラにセットするマスク default | VRMFirstPersonOnly など</span>
 
-<span class="w">    </span><span class="na">[SerializeField]</span><span class="w"></span>
+<span class="w">    </span><span class="na">[SerializeField]</span>
 <span class="w">    </span><span class="n">LayerMask</span><span class="w"> </span><span class="n">m_otherMask</span><span class="p">;</span><span class="w"> </span><span class="c1">// HMDのカメラにセットするマスク default | VRMThirdPersonOnly など</span>
 
-<span class="w">    </span><span class="na">[SerializeField]</span><span class="w"></span>
-<span class="w">    </span><span class="n">VRMFirstPerson</span><span class="w"> </span><span class="n">m_firstPerson</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="na">[SerializeField]</span>
+<span class="w">    </span><span class="n">VRMFirstPerson</span><span class="w"> </span><span class="n">m_firstPerson</span><span class="p">;</span>
 
-<span class="w">    </span><span class="k">void</span><span class="w"> </span><span class="nf">Reset</span><span class="p">()</span><span class="w"></span>
-<span class="w">    </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="n">m_firstPerson</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">GameObject</span><span class="p">.</span><span class="n">FindObjectOfType</span><span class="p">&lt;</span><span class="n">VRMFirstPerson</span><span class="p">&gt;();</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="k">void</span><span class="w"> </span><span class="nf">Reset</span><span class="p">()</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">m_firstPerson</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GameObject</span><span class="p">.</span><span class="n">FindObjectOfType</span><span class="o">&lt;</span><span class="n">VRMFirstPerson</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
 
-<span class="w">    </span><span class="k">void</span><span class="w"> </span><span class="nf">Start</span><span class="p">()</span><span class="w"></span>
-<span class="w">    </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="k">foreach</span><span class="w"> </span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">camera</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">GameObject</span><span class="p">.</span><span class="n">FindObjectsOfType</span><span class="p">&lt;</span><span class="n">Camera</span><span class="p">&gt;())</span><span class="w"></span>
-<span class="w">        </span><span class="p">{</span><span class="w"></span>
-<span class="w">            </span><span class="n">camera</span><span class="p">.</span><span class="n">cullingMask</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">(</span><span class="n">camera</span><span class="w"> </span><span class="p">==</span><span class="w"> </span><span class="n">m_firstPersonCamera</span><span class="p">)</span><span class="w"></span>
-<span class="w">                </span><span class="p">?</span><span class="w"> </span><span class="n">m_firstPersonMask</span><span class="w"></span>
-<span class="w">                </span><span class="p">:</span><span class="w"> </span><span class="n">m_otherMask</span><span class="w"></span>
-<span class="w">                </span><span class="p">;</span><span class="w"></span>
-<span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="k">void</span><span class="w"> </span><span class="nf">Start</span><span class="p">()</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">foreach</span><span class="w"> </span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">camera</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">GameObject</span><span class="p">.</span><span class="n">FindObjectsOfType</span><span class="o">&lt;</span><span class="n">Camera</span><span class="o">&gt;</span><span class="p">())</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="n">camera</span><span class="p">.</span><span class="n">cullingMask</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">camera</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">m_firstPersonCamera</span><span class="p">)</span>
+<span class="w">                </span><span class="o">?</span><span class="w"> </span><span class="n">m_firstPersonMask</span>
+<span class="w">                </span><span class="p">:</span><span class="w"> </span><span class="n">m_otherMask</span>
+<span class="w">                </span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
 
 <span class="w">        </span><span class="c1">// VRMFirstPersonの初期化</span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">m_firstPerson</span><span class="w"> </span><span class="p">!=</span><span class="w"> </span><span class="k">null</span><span class="p">)</span><span class="w"></span>
-<span class="w">        </span><span class="p">{</span><span class="w"></span>
-<span class="w">            </span><span class="n">m_firstPerson</span><span class="p">.</span><span class="n">Setup</span><span class="p">();</span><span class="w"></span>
-<span class="w">        </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">m_firstPerson</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="k">null</span><span class="p">)</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="n">m_firstPerson</span><span class="p">.</span><span class="n">Setup</span><span class="p">();</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>

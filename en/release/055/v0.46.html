@@ -172,6 +172,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../api/0_58_blendshape.html"><code class="docutils literal notranslate"><span class="pre">v0.58</span></code> BlendShapeProxy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/how_to_impl_extension.html"><code class="docutils literal notranslate"><span class="pre">v0.63.2</span></code> glTF拡張の実装</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/0_68_runtime_import.html"><code class="docutils literal notranslate"><span class="pre">v0.68</span></code> RuntimeImport DisposeOnGameObjectDestroyed(obsolete)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/0_76_texture_deserializer.html"><code class="docutils literal notranslate"><span class="pre">v0.76</span></code> ITextureDeserializer(Texture Loader)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/0_77_runtime_import.html"><code class="docutils literal notranslate"><span class="pre">v0.77</span></code> RuntimeImport RuntimeGltfInstance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/0_79_runtime_import.html"><code class="docutils literal notranslate"><span class="pre">v0.79</span></code> RuntimeImport GltfData</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/0_82_glb_import.html"><code class="docutils literal notranslate"><span class="pre">v0.82.1</span></code> GlbImport GltfData</a></li>
@@ -183,7 +184,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../api/0_95_highlevel.html"><code class="docutils literal notranslate"><span class="pre">v0.95</span></code> High-level API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/0_96_1_use_gamma_colorspace.html"><code class="docutils literal notranslate"><span class="pre">v0.96.1</span></code> use gamma color space</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/0_106_spring_manual_update.html"><code class="docutils literal notranslate"><span class="pre">v0.106</span></code> SpringBone の手動更新</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/0_76_texture_deserializer.html"><code class="docutils literal notranslate"><span class="pre">v0.76</span></code> ITextureDeserializer(Texture Loader)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/0_112_urp.html"><code class="docutils literal notranslate"><span class="pre">v0.112</span></code> MToon の URP 対応</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../build.html">Build Application</a></li>
@@ -376,7 +377,7 @@
 </section>
 <section id="unity2018-3">
 <h3>Unity2018.3対応<a class="headerlink" href="#unity2018-3" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="cp">#if NET_4_6 || NET_STANDARD_2_0</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="cp">#if NET_4_6 || NET_STANDARD_2_0</span>
 </pre></div>
 </div>
 </section>
@@ -411,7 +412,7 @@
 <h4>AccumulateValue<a class="headerlink" href="#accumulatevalue" title="Permalink to this headline">¶</a></h4>
 <p>値を貯めて、後で <code class="docutils literal notranslate"><span class="pre">Apply</span></code> したときに反映する。
 <code class="docutils literal notranslate"><span class="pre">SetValues</span></code> の最後にも <code class="docutils literal notranslate"><span class="pre">Apply</span></code> されます。</p>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">void</span><span class="w"> </span><span class="n">BlendShapeProxy</span><span class="p">.</span><span class="n">AccumulateValue</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="k">value</span><span class="p">)</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">void</span><span class="w"> </span><span class="n">BlendShapeProxy</span><span class="p">.</span><span class="n">AccumulateValue</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="k">value</span><span class="p">)</span>
 
 <span class="c1">// [Obsolete] SetValue(key, value, false)</span>
 </pre></div>
@@ -420,7 +421,7 @@
 <section id="immediatelysetvalue">
 <h4>ImmediatelySetValue<a class="headerlink" href="#immediatelysetvalue" title="Permalink to this headline">¶</a></h4>
 <p>即反映する。</p>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">void</span><span class="w"> </span><span class="n">BlendShapeProxy</span><span class="p">.</span><span class="n">ImmediatelySetValue</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="k">value</span><span class="p">)</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">void</span><span class="w"> </span><span class="n">BlendShapeProxy</span><span class="p">.</span><span class="n">ImmediatelySetValue</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="k">value</span><span class="p">)</span>
 
 <span class="c1">// [Obsolete] SetValue(key, value, true)</span>
 </pre></div>
@@ -429,7 +430,7 @@
 </section>
 <section id="id3">
 <h3>ImporterContext.Destroy<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">ImporterContext</span><span class="p">.</span><span class="n">Destroy</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">destroySubAssets</span><span class="p">)</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">ImporterContext</span><span class="p">.</span><span class="n">Destroy</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">destroySubAssets</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>が名前から期待される動作をしていないので <code class="docutils literal notranslate"><span class="pre">Obsolete</span></code> にして用途を明確にした関数を用意しました。</p>

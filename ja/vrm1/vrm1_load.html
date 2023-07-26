@@ -171,6 +171,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../api/0_58_blendshape.html"><code class="docutils literal notranslate"><span class="pre">v0.58</span></code> BlendShapeProxy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/how_to_impl_extension.html"><code class="docutils literal notranslate"><span class="pre">v0.63.2</span></code> glTF拡張の実装</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/0_68_runtime_import.html"><code class="docutils literal notranslate"><span class="pre">v0.68</span></code> RuntimeImport DisposeOnGameObjectDestroyed(obsolete)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/0_76_texture_deserializer.html"><code class="docutils literal notranslate"><span class="pre">v0.76</span></code> ITextureDeserializer(テクスチャーローダー)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/0_77_runtime_import.html"><code class="docutils literal notranslate"><span class="pre">v0.77</span></code> RuntimeImport RuntimeGltfInstance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/0_79_runtime_import.html"><code class="docutils literal notranslate"><span class="pre">v0.79</span></code> RuntimeImport GltfData</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/0_82_glb_import.html"><code class="docutils literal notranslate"><span class="pre">v0.82.1</span></code> GlbImport GltfData</a></li>
@@ -182,7 +183,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../api/0_95_highlevel.html"><code class="docutils literal notranslate"><span class="pre">v0.95</span></code> 簡単API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/0_96_1_use_gamma_colorspace.html"><code class="docutils literal notranslate"><span class="pre">v0.96.1</span></code> ガンマ カラースペースを使う</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/0_106_spring_manual_update.html"><code class="docutils literal notranslate"><span class="pre">v0.106</span></code> SpringBone の手動更新</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/0_76_texture_deserializer.html"><code class="docutils literal notranslate"><span class="pre">v0.76</span></code> ITextureDeserializer(テクスチャーローダー)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/0_112_urp.html"><code class="docutils literal notranslate"><span class="pre">v0.112</span></code> MToon の URP 対応</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../build.html">アプリケーションのビルド</a></li>
@@ -343,7 +344,7 @@
 <p><code class="docutils literal notranslate"><span class="pre">Assets\VRM10\Samples\VRM10Viewer\VRM10ViewerUI.cs</span></code></p>
 <section id="id1">
 <h2>RuntimeLoad<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h2>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">Vrm10Instance</span><span class="w"> </span><span class="n">vrm10Instance</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="n">Vrm10</span><span class="p">.</span><span class="n">LoadPathAsync</span><span class="p">(</span><span class="n">path</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">Vrm10Instance</span><span class="w"> </span><span class="n">vrm10Instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="n">Vrm10</span><span class="p">.</span><span class="n">LoadPathAsync</span><span class="p">(</span><span class="n">path</span><span class="p">);</span>
 </pre></div>
 </div>
 </section>
@@ -353,39 +354,39 @@
 その場合、あたらしい meta への変換が発生し互換性の無い部分はすべて <code class="docutils literal notranslate"><span class="pre">不許可</span></code> の値になります。
 変換前のライセンスにアクセスできます。</p>
 <p>サンプルの <code class="docutils literal notranslate"><span class="pre">Assets\VRM10\Samples\VRM10Viewer\VRM10ViewerUI.cs</span></code> も参照してください。</p>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">async</span><span class="w"> </span><span class="n">Task</span><span class="p">&lt;</span><span class="n">Vrm10Instance</span><span class="p">&gt;</span><span class="w"> </span><span class="n">LoadAsync</span><span class="p">(</span><span class="kt">string</span><span class="w"> </span><span class="n">path</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="n">GltfData</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">AutoGltfFileParser</span><span class="p">(</span><span class="n">path</span><span class="p">).</span><span class="n">Parse</span><span class="p">();</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">async</span><span class="w"> </span><span class="n">Task</span><span class="o">&lt;</span><span class="n">Vrm10Instance</span><span class="o">&gt;</span><span class="w"> </span><span class="n">LoadAsync</span><span class="p">(</span><span class="kt">string</span><span class="w"> </span><span class="n">path</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">GltfData</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">AutoGltfFileParser</span><span class="p">(</span><span class="n">path</span><span class="p">).</span><span class="n">Parse</span><span class="p">();</span>
 
 <span class="w">    </span><span class="c1">// doMigrate: true で旧バージョンの vrm をロードできます。</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">Vrm10Data</span><span class="p">.</span><span class="n">TryParseOrMigrate</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">doMigrate</span><span class="p">:</span><span class="w"> </span><span class="k">true</span><span class="p">,</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="n">Vrm10Data</span><span class="w"> </span><span class="n">vrm</span><span class="p">))</span><span class="w"></span>
-<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">Vrm10Data</span><span class="p">.</span><span class="n">TryParseOrMigrate</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">doMigrate</span><span class="p">:</span><span class="w"> </span><span class="k">true</span><span class="p">,</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="n">Vrm10Data</span><span class="w"> </span><span class="n">vrm</span><span class="p">))</span>
+<span class="w">    </span><span class="p">{</span>
 <span class="w">        </span><span class="c1">// vrm</span>
-<span class="w">        </span><span class="k">using</span><span class="w"> </span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">loader</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Vrm10Importer</span><span class="p">(</span><span class="n">vrm</span><span class="p">))</span><span class="w"></span>
-<span class="w">        </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="k">using</span><span class="w"> </span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">loader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Vrm10Importer</span><span class="p">(</span><span class="n">vrm</span><span class="p">))</span>
+<span class="w">        </span><span class="p">{</span>
 <span class="w">            </span><span class="c1">// migrate しても thumbnail は同じ</span>
-<span class="w">            </span><span class="kt">var</span><span class="w"> </span><span class="n">thumbnail</span><span class="w">  </span><span class="p">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="n">loader</span><span class="p">.</span><span class="n">LoadVrmThumbnailAsync</span><span class="p">();</span><span class="w"></span>
+<span class="w">            </span><span class="kt">var</span><span class="w"> </span><span class="n">thumbnail</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="n">loader</span><span class="p">.</span><span class="n">LoadVrmThumbnailAsync</span><span class="p">();</span>
 
-<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">vrm</span><span class="p">.</span><span class="n">OriginalMetaBeforeMigration</span><span class="w"> </span><span class="p">!=</span><span class="w"> </span><span class="k">null</span><span class="p">)</span><span class="w"></span>
-<span class="w">            </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">vrm</span><span class="p">.</span><span class="n">OriginalMetaBeforeMigration</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="k">null</span><span class="p">)</span>
+<span class="w">            </span><span class="p">{</span>
 <span class="w">                </span><span class="c1">// migrated from vrm-0.x. use OriginalMetaBeforeMigration</span>
-<span class="w">                </span><span class="n">UpdateMeta</span><span class="p">(</span><span class="n">vrm</span><span class="p">.</span><span class="n">OriginalMetaBeforeMigration</span><span class="p">,</span><span class="w"> </span><span class="n">thumbnail</span><span class="p">);</span><span class="w"></span>
-<span class="w">            </span><span class="p">}</span><span class="w"></span>
-<span class="w">            </span><span class="k">else</span><span class="w"></span>
-<span class="w">            </span><span class="p">{</span><span class="w"></span>
+<span class="w">                </span><span class="n">UpdateMeta</span><span class="p">(</span><span class="n">vrm</span><span class="p">.</span><span class="n">OriginalMetaBeforeMigration</span><span class="p">,</span><span class="w"> </span><span class="n">thumbnail</span><span class="p">);</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">            </span><span class="k">else</span>
+<span class="w">            </span><span class="p">{</span>
 <span class="w">                </span><span class="c1">// load vrm-1.0. use newMeta</span>
-<span class="w">                </span><span class="n">UpdateMeta</span><span class="p">(</span><span class="n">vrm</span><span class="p">.</span><span class="n">VrmExtension</span><span class="p">.</span><span class="n">Meta</span><span class="p">,</span><span class="w"> </span><span class="n">thumbnail</span><span class="p">);</span><span class="w"></span>
-<span class="w">            </span><span class="p">}</span><span class="w"></span>
+<span class="w">                </span><span class="n">UpdateMeta</span><span class="p">(</span><span class="n">vrm</span><span class="p">.</span><span class="n">VrmExtension</span><span class="p">.</span><span class="n">Meta</span><span class="p">,</span><span class="w"> </span><span class="n">thumbnail</span><span class="p">);</span>
+<span class="w">            </span><span class="p">}</span>
 
 <span class="w">            </span><span class="c1">// モデルをロード</span>
-<span class="w">            </span><span class="n">RuntimeGltfInstance</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="n">loader</span><span class="p">.</span><span class="n">LoadAsync</span><span class="p">();</span><span class="w"></span>
-<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">instance</span><span class="p">.</span><span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">Vrm10Instance</span><span class="p">&gt;();</span><span class="w"></span>
-<span class="w">        </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="k">else</span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="nf">Exception</span><span class="p">(</span><span class="s">"not vrm"</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="w">            </span><span class="n">RuntimeGltfInstance</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="n">loader</span><span class="p">.</span><span class="n">LoadAsync</span><span class="p">();</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">instance</span><span class="p">.</span><span class="n">GetComponent</span><span class="o">&lt;</span><span class="n">Vrm10Instance</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">else</span><span class="p">{</span>
+<span class="w">        </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="nf">Exception</span><span class="p">(</span><span class="s">"not vrm"</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
