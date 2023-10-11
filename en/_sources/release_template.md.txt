@@ -1,11 +1,11 @@
 ## Release Notes
 
-- [日本語](https://vrm-c.github.io/UniVRM/ja/release/100/v${version}.html)
-- [English](https://vrm-c.github.io/UniVRM/en/release/100/v${version}.html)
+- [日本語](https://vrm-c.github.io/UniVRM/ja/release/${dir}/v${version}.html)
+- [English](https://vrm-c.github.io/UniVRM/en/release/${dir}/v${version}.html)
 
 ## Installation
 
-The UniVRM supports Unity 2020.3 LTS or later.
+The UniVRM supports Unity ${unity_version} or later.
 
 You can install UniVRM using the UnityPackage or the UPM Package.
 
