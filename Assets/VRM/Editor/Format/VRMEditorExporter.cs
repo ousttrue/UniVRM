@@ -208,8 +208,11 @@ namespace VRM
 
             if (settings.PoseFreeze)
             {
-                // 正規化
-                VRMBoneNormalizer.Execute(target, settings.ForceTPose);
+                using (var backup = new VrmGeometryBackup(target))
+                {
+                    // 正規化
+                    VRMBoneNormalizer.Execute(target, settings.ForceTPose);
+                }
             }
 
             // 元のBlendShapeClipに変更を加えないように複製
