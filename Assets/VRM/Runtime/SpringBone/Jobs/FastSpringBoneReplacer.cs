@@ -78,7 +78,7 @@ namespace VRM.SpringBoneJobs
                 springs[i] = spring;
             }
 
-            return new FastSpringBoneBuffer(root.transform, springs);
+            return FastSpringBoneBufferBuilder.Flattern(root.transform, springs);
         }
 
         static void Traverse(List<FastSpringBoneJoint> joints, VRMSpringBone spring, Transform joint, IReadOnlyDictionary<Transform, TransformState> initMap)

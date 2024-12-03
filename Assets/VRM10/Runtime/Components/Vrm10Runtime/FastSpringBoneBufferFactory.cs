@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UniGLTF;
@@ -6,11 +7,18 @@ using UniGLTF.SpringBoneJobs.Blittables;
 using UniGLTF.SpringBoneJobs.InputPorts;
 using UniGLTF.Utils;
 using UnityEngine;
+using UnityEngine.Profiling;
+
 
 namespace UniVRM10
 {
     public static class FastSpringBoneBufferFactory
     {
+        static List<FastSpringBoneSpring> springs = new();
+        static List<FastSpringBoneJoint> joints = new();
+        static List<FastSpringBoneCollider> colliders = new();
+        static HashSet<VRM10SpringBoneCollider> colliderSet = new();
+
         /// <summary>
         /// このVRMに紐づくSpringBone関連のバッファを構築する。
         /// </summary>
@@ -40,43 +48,126 @@ namespace UniVRM10
                 return new TransformState(null);
             };
 
-            // create(Spring情報の再収集。設定変更の反映)
-            var springs = vrm.SpringBone.Springs.Select(spring => new FastSpringBoneSpring
+            Profiler.BeginSample("FastSpringBone.ConstructSpringBoneAsync");
+
+            Profiler.BeginSample("FastSpringBone.ConstructSpringBoneAsync springs");
+            springs.Clear();
+            foreach (var spring in vrm.SpringBone.Springs)
             {
-                center = spring.Center,
-                colliders = spring.ColliderGroups
-                   .SelectMany(group => group.Colliders)
-                   .Select(collider => new FastSpringBoneCollider
-                   {
-                       Transform = collider.transform,
-                       Collider = new BlittableCollider
-                       {
-                           offset = collider.Offset,
-                           radius = collider.Radius,
-                           tailOrNormal = collider.TailOrNormal,
-                           colliderType = TranslateColliderType(collider.ColliderType)
-                       }
-                   }).ToArray(),
-                joints = spring.Joints
-                   .Select(joint => new FastSpringBoneJoint
-                   {
-                       Transform = joint.transform,
-                       Joint = new BlittableJointMutable
-                       {
-                           radius = joint.m_jointRadius,
-                           dragForce = joint.m_dragForce,
-                           gravityDir = joint.m_gravityDir,
-                           gravityPower = joint.m_gravityPower,
-                           stiffnessForce = joint.m_stiffnessForce
-                       },
-                       DefaultLocalRotation = GetOrAddDefaultTransformState(joint.transform).LocalRotation,
-                   }).ToArray(),
-            }).ToArray();
+                if (spring == null)
+                {
+                    // Debug.LogWarning("null spring", vrm.transform);
+                    continue;
+                }
+                if (spring.Joints.Count == 0)
+                {
+                    // Debug.LogWarning("empty spring", vrm.transform);
+                    continue;
+                }
+
+                joints.Clear();
+                foreach (var joint in spring.Joints)
+                {
+                    if (joint == null)
+                    {
+                        // Debug.LogWarning("null joint", vrm.transform);
+                        continue;
+                    }
+                    if (joints.Any(x => x.Transform == joint.transform))
+                    {
+                        // Debug.LogWarning("dup joint", joint);
+                        continue;
+                    }
+
+                    int i = 0;
+                    if (joints.Count > 0)
+                    {
+                        for (; i < joints.Count; ++i)
+                        {
+                            // JOINT が 親子順に並んでいること確実にする
+                            if (!joint.transform.IsChildOf(joints[i].Transform))
+                            {
+                                break;
+                            }
+                        }
+                    }
+                    Debug.Assert(joints.Skip(1).All(x => x.Transform.IsChildOf(joints[0].Transform)));
+
+                    joints.Insert(i, new FastSpringBoneJoint
+                    {
+                        Transform = joint.transform,
+                        Joint = new BlittableJointMutable
+                        {
+                            radius = joint.m_jointRadius,
+                            dragForce = joint.m_dragForce,
+                            gravityDir = joint.m_gravityDir,
+                            gravityPower = joint.m_gravityPower,
+                            stiffnessForce = joint.m_stiffnessForce
+                        },
+                        DefaultLocalRotation = GetOrAddDefaultTransformState(joint.transform).LocalRotation,
+                    });
+                }
+
+                colliders.Clear();
+                colliderSet.Clear();
+                foreach (var colliderGroup in spring.ColliderGroups)
+                {
+                    if (colliderGroup == null)
+                    {
+                        // Debug.LogWarning("null collider group", vrm);
+                        continue;
+                    }
+                    if (colliderGroup.Colliders.Count == 0)
+                    {
+                        // Debug.LogWarning("empty colliderGroup", colliderGroup);
+                        continue;
+                    }
+
+                    foreach (var collider in colliderGroup.Colliders)
+                    {
+                        if (collider == null)
+                        {
+                            // Debug.LogWarning("null collider", colliderGroup);
+                            continue; ;
+                        }
+                        if (colliderSet.Contains(collider))
+                        {
+                            // Debug.LogWarning("dup collider", collider);
+                            continue;
+                        }
+
+                        colliderSet.Add(collider);
+                        colliders.Add(new FastSpringBoneCollider
+                        {
+                            Transform = collider.transform,
+                            Collider = new BlittableCollider
+                            {
+                                offset = collider.Offset,
+                                radius = collider.Radius,
+                                tailOrNormal = collider.TailOrNormal,
+                                colliderType = TranslateColliderType(collider.ColliderType)
+                            }
+                        });
+                    }
+                }
+
+                springs.Add(new FastSpringBoneSpring
+                {
+                    joints = joints.ToArray(),
+                    colliders = colliders.ToArray(),
+                    center = spring.Center,
+                });
+            }
+            Profiler.EndSample();
 
             await awaitCaller.NextFrame();
 
-            fastSpringBoneBuffer = new FastSpringBoneBuffer(vrm.transform, springs);
-            return fastSpringBoneBuffer;
+            Profiler.BeginSample("FastSpringBone.ConstructSpringBoneAsync FastSpringBoneBufferBuilder.Flattern");
+            var buf = FastSpringBoneBufferBuilder.Flattern(vrm.transform, springs.ToArray());
+            Profiler.EndSample();
+
+            Profiler.EndSample();
+            return buf;
         }
 
         private static BlittableColliderType TranslateColliderType(VRM10SpringBoneColliderTypes colliderType)
