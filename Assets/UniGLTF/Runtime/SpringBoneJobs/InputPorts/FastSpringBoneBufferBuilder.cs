@@ -67,6 +67,12 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
                             localPosition.z * scale.z
                         );
 
+                    var parentJoint = spring.GetClosestParentJointIndex(joint);
+                    if (parentJoint.HasValue && parentJoint.Value + 1 != i)
+                    {
+                        Debug.Log($"枝 [{i}] {parentJoint.Value} => {spring.joints[parentJoint.Value].Transform}");
+                    }
+
                     blittableLogics.Add(new BlittableJointImmutable
                     {
                         headTransformIndex = Array.IndexOf(transforms, joint.Transform),
@@ -74,7 +80,7 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
                         tailTransformIndex = Array.IndexOf(transforms, tailJoint.Transform),
                         localRotation = joint.DefaultLocalRotation,
                         boneAxis = localChildPosition.normalized,
-                        length = localChildPosition.magnitude
+                        length = localChildPosition.magnitude,
                     });
                 }
             }
