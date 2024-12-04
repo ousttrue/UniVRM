@@ -36,6 +36,7 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
                         count = spring.joints.Length - 1,
                     },
                     centerTransformIndex = Array.IndexOf(transforms, spring.center),
+                    parentTransformIndex = Array.IndexOf(transforms, spring.joints[0].Transform.parent),
                 };
                 blittableSprings.Add(blittableSpring);
 
@@ -76,12 +77,12 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
                     blittableLogics.Add(new BlittableJointImmutable
                     {
                         headTransformIndex = Array.IndexOf(transforms, joint.Transform),
-                        parentTransformIndex = Array.IndexOf(transforms, joint.Transform.parent),
                         tailTransformIndex = Array.IndexOf(transforms, tailJoint.Transform),
                         initRotation = joint.DefaultLocalRotation,
                         initPosition = joint.DefaultLocalPosition,
                         boneAxis = localChildPosition.normalized,
                         length = localChildPosition.magnitude,
+                        parentJointIndex = parentJoint.HasValue ? parentJoint.Value : -1,
                     });
                 }
             }
@@ -106,16 +107,23 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
             var transformHashSet = new HashSet<Transform>();
             foreach (var spring in springs)
             {
+                // root parent
+                transformHashSet.Add(spring.joints[0].Transform.parent);
+                // joints
                 foreach (var joint in spring.joints)
                 {
                     transformHashSet.Add(joint.Transform);
-                    if (joint.Transform.parent != null) transformHashSet.Add(joint.Transform.parent);
                 }
+                // colliders
                 foreach (var collider in spring.colliders)
                 {
                     transformHashSet.Add(collider.Transform);
                 }
-                if (spring.center != null) transformHashSet.Add(spring.center);
+                // center
+                if (spring.center != null)
+                {
+                    transformHashSet.Add(spring.center);
+                }
             }
             return transformHashSet.ToArray();
         }

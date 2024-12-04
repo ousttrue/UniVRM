@@ -14,5 +14,7 @@ namespace UniGLTF.SpringBoneJobs.Blittables
         public int centerTransformIndex;
         public int transformIndexOffset;
         public int modelIndex;
+        // ひとつ目の joint の親
+        public int parentTransformIndex;
     }
 }

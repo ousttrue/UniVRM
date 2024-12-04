@@ -52,34 +52,30 @@ namespace UniGLTF.SpringBoneJobs
             for (var logicIndex = logicSpan.startIndex; logicIndex < logicSpan.startIndex + logicSpan.count; ++logicIndex)
             {
                 var logic = Logics[logicIndex];
-                var parentTransform = logic.parentTransformIndex >= 0
-                    ? Transforms[transformIndexOffset + logic.parentTransformIndex]
-                    : (BlittableTransform?)null;
+                var parentTransform = logicIndex == logicSpan.startIndex
+                    ? Transforms[transformIndexOffset + spring.parentTransformIndex]
+                    : Transforms[transformIndexOffset + Logics[logicSpan.startIndex + logic.parentJointIndex].headTransformIndex];
 
                 var headTransform = Transforms[transformIndexOffset + logic.headTransformIndex];
-                if (parentTransform.HasValue)
-                {
-                    // 親があったら、親に依存するTransformを再計算
-                    headTransform.position =
-                        parentTransform.Value.localToWorldMatrix.MultiplyPoint3x4(headTransform.localPosition);
-                    headTransform.rotation = parentTransform.Value.rotation * headTransform.localRotation;
-                }
-                var parentRotation = parentTransform?.rotation ?? Quaternion.identity;
+                // 親に依存するTransformを再計算
+                headTransform.position =
+                    parentTransform.localToWorldMatrix.MultiplyPoint3x4(headTransform.localPosition);
+                headTransform.rotation = parentTransform.rotation * headTransform.localRotation;
 
                 // scaling 対応
                 var scalingFactor = model.SupportsScalingAtRuntime ? TransformExtensions.AbsoluteMaxValue(headTransform.localToWorldMatrix.lossyScale) : 1.0f;
 
-                var nextTail = ExecuteJoint(spring, logicIndex, headTransform.position, parentRotation, scalingFactor, model.ExternalForce);
+                var nextTail = ExecuteJoint(spring, logicIndex, headTransform.position, parentTransform.rotation, scalingFactor, model.ExternalForce);
                 NextTail[logicIndex] = nextTail;
 
                 if (!model.StopSpringBoneWriteback)
                 {
                     // SpringBone の結果を Transform に反映する
-                    headTransform.rotation = CalcRotation(logic, parentTransform.Value.localToWorldMatrix, headTransform.position, nextTail);
+                    headTransform.rotation = CalcRotation(logic, parentTransform.localToWorldMatrix, headTransform.position, nextTail);
 
                     // var parentLocalToWorldMatrix = parentTransform.Value.localToWorldMatrix;
-                    var localRotation = Normalize(Quaternion.Inverse(parentTransform.Value.localToWorldMatrix.rotation) * headTransform.rotation);
-                    headTransform.localToWorldMatrix = parentTransform.Value.localToWorldMatrix *
+                    var localRotation = Normalize(Quaternion.Inverse(parentTransform.localToWorldMatrix.rotation) * headTransform.rotation);
+                    headTransform.localToWorldMatrix = parentTransform.localToWorldMatrix *
                         Matrix4x4.TRS(
                             headTransform.localPosition,
                             localRotation,

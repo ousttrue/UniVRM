@@ -11,7 +11,6 @@ namespace UniGLTF.SpringBoneJobs.Blittables
     [Serializable]
     public struct BlittableJointImmutable
     {
-        public int parentTransformIndex;
         public int headTransformIndex;
         public int tailTransformIndex;
         public float length;
@@ -20,6 +19,8 @@ namespace UniGLTF.SpringBoneJobs.Blittables
 
         // initPosition.noamlized of tail
         public Vector3 boneAxis;
+
+        public int parentJointIndex;
 
         public void DrawGizmo(BlittableTransform t, BlittableJointMutable m)
         {
