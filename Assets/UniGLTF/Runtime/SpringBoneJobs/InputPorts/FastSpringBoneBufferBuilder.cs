@@ -78,7 +78,8 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
                         headTransformIndex = Array.IndexOf(transforms, joint.Transform),
                         parentTransformIndex = Array.IndexOf(transforms, joint.Transform.parent),
                         tailTransformIndex = Array.IndexOf(transforms, tailJoint.Transform),
-                        localRotation = joint.DefaultLocalRotation,
+                        initRotation = joint.DefaultLocalRotation,
+                        initPosition = joint.DefaultLocalPosition,
                         boneAxis = localChildPosition.normalized,
                         length = localChildPosition.magnitude,
                     });

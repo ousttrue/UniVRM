@@ -95,6 +95,7 @@ namespace VRM.SpringBoneJobs
                     stiffnessForce = spring.m_stiffnessForce
                 },
                 DefaultLocalRotation = initMap[joint.transform].LocalRotation,
+                DefaultLocalPosition = initMap[joint.transform].LocalPosition,
             });
             foreach (Transform child in joint)
             {

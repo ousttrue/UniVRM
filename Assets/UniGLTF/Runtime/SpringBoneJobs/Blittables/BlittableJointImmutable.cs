@@ -15,7 +15,10 @@ namespace UniGLTF.SpringBoneJobs.Blittables
         public int headTransformIndex;
         public int tailTransformIndex;
         public float length;
-        public Quaternion localRotation;
+        public Quaternion initRotation;
+        public Vector3 initPosition;
+
+        // initPosition.noamlized of tail
         public Vector3 boneAxis;
 
         public void DrawGizmo(BlittableTransform t, BlittableJointMutable m)

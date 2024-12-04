@@ -105,6 +105,7 @@ namespace UniVRM10
                             stiffnessForce = joint.m_stiffnessForce
                         },
                         DefaultLocalRotation = GetOrAddDefaultTransformState(joint.transform).LocalRotation,
+                        DefaultLocalPosition = GetOrAddDefaultTransformState(joint.transform).LocalPosition,
                     });
                 }
 

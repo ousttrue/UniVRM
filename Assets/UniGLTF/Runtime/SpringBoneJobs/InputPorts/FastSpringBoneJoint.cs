@@ -10,5 +10,6 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
         public Transform Transform;
         public BlittableJointMutable Joint;
         public Quaternion DefaultLocalRotation;
+        public Vector3 DefaultLocalPosition;
     }
 }

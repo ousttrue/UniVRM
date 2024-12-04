@@ -91,7 +91,7 @@ namespace UniGLTF.SpringBoneJobs
             var external = (joint.gravityDir * joint.gravityPower + model.ExternalForce) * DeltaTime;
             var nextTail = currentTail
                            + (currentTail - prevTail) * (1.0f - joint.dragForce) // 前フレームの移動を継続する(減衰もあるよ)
-                           + parentRotation * logic.localRotation * logic.boneAxis *
+                           + parentRotation * logic.initRotation * logic.boneAxis *
                            joint.stiffnessForce * DeltaTime * scalingFactor // 親の回転による子ボーンの移動目標
                            + external * scalingFactor; // 外力による移動量
 
@@ -106,7 +106,7 @@ namespace UniGLTF.SpringBoneJobs
                 : nextTail;
 
             // nextTail から回転を計算(親の回転に依存:再帰)
-            var rotation = parentRotation * logic.localRotation;
+            var rotation = parentRotation * logic.initRotation;
             headTransform.rotation = Quaternion.FromToRotation(rotation * logic.boneAxis,
                 nextTail - headTransform.position) * rotation;
 
