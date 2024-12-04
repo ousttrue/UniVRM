@@ -42,142 +42,154 @@ namespace UniGLTF.SpringBoneJobs
         // System Level
         public float DeltaTime;
 
-        /// <param name="index">房のindex</param>
-        public void Execute(int index)
+        public void Execute(int springIndex)
         {
-            var spring = Springs[index];
-            var transformIndexOffset = spring.transformIndexOffset;
-            var colliderSpan = spring.colliderSpan;
+            var spring = Springs[springIndex];
             var logicSpan = spring.logicSpan;
-            var model = Models[spring.modelIndex];
-
             for (var logicIndex = logicSpan.startIndex; logicIndex < logicSpan.startIndex + logicSpan.count; ++logicIndex)
             {
-                var logic = Logics[logicIndex];
-                var joint = Joints[logicIndex];
+                ExecuteJoint(spring, logicIndex);
+            }
+        }
 
-                var headTransform = Transforms[logic.headTransformIndex + transformIndexOffset];
-                var parentTransform = logic.parentTransformIndex >= 0
-                    ? Transforms[logic.parentTransformIndex + transformIndexOffset]
-                    : (BlittableTransform?)null;
-                var centerTransform = spring.centerTransformIndex >= 0
-                    ? Transforms[spring.centerTransformIndex + transformIndexOffset]
-                    : (BlittableTransform?)null;
+        void ExecuteJoint(in BlittableSpring spring, int logicIndex)
+        {
+            var transformIndexOffset = spring.transformIndexOffset;
+            var logic = Logics[logicIndex];
+            var joint = Joints[logicIndex];
+            var model = Models[spring.modelIndex];
 
-                // 親があったら、親に依存するTransformを再計算
-                if (parentTransform.HasValue)
+            var headTransform = Transforms[transformIndexOffset + logic.headTransformIndex];
+            var parentTransform = logic.parentTransformIndex >= 0
+                ? Transforms[transformIndexOffset + logic.parentTransformIndex]
+                : (BlittableTransform?)null;
+            var centerTransform = spring.centerTransformIndex >= 0
+                ? Transforms[transformIndexOffset + spring.centerTransformIndex]
+                : (BlittableTransform?)null;
+
+            // 親があったら、親に依存するTransformを再計算
+            if (parentTransform.HasValue)
+            {
+                headTransform.position =
+                    parentTransform.Value.localToWorldMatrix.MultiplyPoint3x4(headTransform.localPosition);
+                headTransform.rotation = parentTransform.Value.rotation * headTransform.localRotation;
+            }
+
+            var currentTail = centerTransform.HasValue
+                ? centerTransform.Value.localToWorldMatrix.MultiplyPoint3x4(CurrentTail[logicIndex])
+                : CurrentTail[logicIndex];
+            var prevTail = centerTransform.HasValue
+                ? centerTransform.Value.localToWorldMatrix.MultiplyPoint3x4(PrevTail[logicIndex])
+                : PrevTail[logicIndex];
+
+            var parentRotation = parentTransform?.rotation ?? Quaternion.identity;
+
+            // scaling 対応
+            var scalingFactor = model.SupportsScalingAtRuntime ? TransformExtensions.AbsoluteMaxValue(headTransform.localToWorldMatrix.lossyScale) : 1.0f;
+
+            // verlet積分で次の位置を計算
+            var external = (joint.gravityDir * joint.gravityPower + model.ExternalForce) * DeltaTime;
+            var nextTail = currentTail
+                           + (currentTail - prevTail) * (1.0f - joint.dragForce) // 前フレームの移動を継続する(減衰もあるよ)
+                           + parentRotation * logic.localRotation * logic.boneAxis *
+                           joint.stiffnessForce * DeltaTime * scalingFactor // 親の回転による子ボーンの移動目標
+                           + external * scalingFactor; // 外力による移動量
+
+            // head-tail 間の長さをboneLengthに強制(親の位置に依存:再帰)
+            nextTail = headTransform.position + (nextTail - headTransform.position).normalized * logic.length;
+
+            // collision
+            nextTail = Collide(spring, logic, joint, headTransform.position, nextTail);
+
+            NextTail[logicIndex] = centerTransform.HasValue
+                ? centerTransform.Value.worldToLocalMatrix.MultiplyPoint3x4(nextTail)
+                : nextTail;
+
+            // nextTail から回転を計算(親の回転に依存:再帰)
+            var rotation = parentRotation * logic.localRotation;
+            headTransform.rotation = Quaternion.FromToRotation(rotation * logic.boneAxis,
+                nextTail - headTransform.position) * rotation;
+
+            // Transformを更新
+            if (parentTransform.HasValue)
+            {
+                var parentLocalToWorldMatrix = parentTransform.Value.localToWorldMatrix;
+                headTransform.localRotation = Normalize(Quaternion.Inverse(parentTransform.Value.rotation) * headTransform.rotation);
+                headTransform.localToWorldMatrix =
+                    parentLocalToWorldMatrix *
+                    Matrix4x4.TRS(
+                        headTransform.localPosition,
+                        headTransform.localRotation,
+                        headTransform.localScale
+                    );
+                headTransform.worldToLocalMatrix = headTransform.localToWorldMatrix.inverse;
+            }
+            else
+            {
+                headTransform.localToWorldMatrix =
+                    Matrix4x4.TRS(
+                        headTransform.position,
+                        headTransform.rotation,
+                        headTransform.localScale
+                    );
+                headTransform.worldToLocalMatrix = headTransform.localToWorldMatrix.inverse;
+                headTransform.localRotation = headTransform.rotation;
+            }
+
+            if (!model.StopSpringBoneWriteback)
+            {
+                // SpringBone の結果を Transform に反映する
+                Transforms[logic.headTransformIndex + transformIndexOffset] = headTransform;
+            }
+            else
+            {
+                // SpringBone の結果を Transform に反映しないが logic の更新は継続する。
+                // 再開したときに暴れない。
+            }
+        }
+
+        Vector3 Collide(in BlittableSpring spring, in BlittableJointImmutable logic, in BlittableJointMutable joint, in Vector3 headPosition, Vector3 nextTail)
+        {
+            var transformIndexOffset = spring.transformIndexOffset;
+            var colliderSpan = spring.colliderSpan;
+            for (var colliderIndex = colliderSpan.startIndex; colliderIndex < colliderSpan.startIndex + colliderSpan.count; ++colliderIndex)
+            {
+                var collider = Colliders[colliderIndex];
+                var colliderTransform = Transforms[transformIndexOffset + collider.transformIndex];
+                var colliderScale = colliderTransform.localToWorldMatrix.lossyScale;
+                var maxColliderScale = Mathf.Max(Mathf.Max(Mathf.Abs(colliderScale.x), Mathf.Abs(colliderScale.y)), Mathf.Abs(colliderScale.z));
+                var colliderPosition = colliderTransform.localToWorldMatrix.MultiplyPoint3x4(collider.offset);
+
+                switch (collider.colliderType)
                 {
-                    headTransform.position =
-                        parentTransform.Value.localToWorldMatrix.MultiplyPoint3x4(headTransform.localPosition);
-                    headTransform.rotation = parentTransform.Value.rotation * headTransform.localRotation;
-                }
+                    case BlittableColliderType.Sphere:
+                        ResolveSphereCollision(joint, collider, colliderPosition, headPosition, maxColliderScale, logic, ref nextTail);
+                        break;
 
-                var currentTail = centerTransform.HasValue
-                    ? centerTransform.Value.localToWorldMatrix.MultiplyPoint3x4(CurrentTail[logicIndex])
-                    : CurrentTail[logicIndex];
-                var prevTail = centerTransform.HasValue
-                    ? centerTransform.Value.localToWorldMatrix.MultiplyPoint3x4(PrevTail[logicIndex])
-                    : PrevTail[logicIndex];
-
-                var parentRotation = parentTransform?.rotation ?? Quaternion.identity;
-
-                // scaling 対応
-                var scalingFactor = model.SupportsScalingAtRuntime ? TransformExtensions.AbsoluteMaxValue(headTransform.localToWorldMatrix.lossyScale) : 1.0f;
-
-                // verlet積分で次の位置を計算
-                var external = (joint.gravityDir * joint.gravityPower + model.ExternalForce) * DeltaTime;
-                var nextTail = currentTail
-                               + (currentTail - prevTail) * (1.0f - joint.dragForce) // 前フレームの移動を継続する(減衰もあるよ)
-                               + parentRotation * logic.localRotation * logic.boneAxis *
-                               joint.stiffnessForce * DeltaTime * scalingFactor // 親の回転による子ボーンの移動目標
-                               + external * scalingFactor; // 外力による移動量
-
-                // 長さをboneLengthに強制
-                nextTail = headTransform.position + (nextTail - headTransform.position).normalized * logic.length;
-
-                // Collisionで移動
-                for (var colliderIndex = colliderSpan.startIndex; colliderIndex < colliderSpan.startIndex + colliderSpan.count; ++colliderIndex)
-                {
-                    var collider = Colliders[colliderIndex];
-                    var colliderTransform = Transforms[collider.transformIndex + transformIndexOffset];
-                    var colliderScale = colliderTransform.localToWorldMatrix.lossyScale;
-                    var maxColliderScale = Mathf.Max(Mathf.Max(Mathf.Abs(colliderScale.x), Mathf.Abs(colliderScale.y)), Mathf.Abs(colliderScale.z));
-                    var worldPosition = colliderTransform.localToWorldMatrix.MultiplyPoint3x4(collider.offset);
-                    var worldTail = colliderTransform.localToWorldMatrix.MultiplyPoint3x4(collider.tailOrNormal);
-
-                    switch (collider.colliderType)
-                    {
-                        case BlittableColliderType.Sphere:
-                            ResolveSphereCollision(joint, collider, worldPosition, headTransform, maxColliderScale, logic, ref nextTail);
+                    case BlittableColliderType.Capsule:
+                        {
+                            var worldTail = colliderTransform.localToWorldMatrix.MultiplyPoint3x4(collider.tailOrNormal);
+                            ResolveCapsuleCollision(worldTail, colliderPosition, headPosition, joint, collider, maxColliderScale, logic, ref nextTail);
                             break;
+                        }
 
-                        case BlittableColliderType.Capsule:
-                            ResolveCapsuleCollision(worldTail, worldPosition, headTransform, joint, collider, maxColliderScale, logic, ref nextTail);
-                            break;
+                    case BlittableColliderType.Plane:
+                        ResolvePlaneCollision(joint, collider, colliderTransform, ref nextTail);
+                        break;
 
-                        case BlittableColliderType.Plane:
-                            ResolvePlaneCollision(joint, collider, colliderTransform, ref nextTail);
-                            break;
+                    case BlittableColliderType.SphereInside:
+                        ResolveSphereCollisionInside(joint, collider, colliderTransform, ref nextTail);
+                        break;
 
-                        case BlittableColliderType.SphereInside:
-                            ResolveSphereCollisionInside(joint, collider, colliderTransform, ref nextTail);
-                            break;
+                    case BlittableColliderType.CapsuleInside:
+                        ResolveCapsuleCollisionInside(joint, collider, colliderTransform, ref nextTail);
+                        break;
 
-                        case BlittableColliderType.CapsuleInside:
-                            ResolveCapsuleCollisionInside(joint, collider, colliderTransform, ref nextTail);
-                            break;
-
-                        default:
-                            throw new NotImplementedException();
-                    }
-                }
-
-                NextTail[logicIndex] = centerTransform.HasValue
-                    ? centerTransform.Value.worldToLocalMatrix.MultiplyPoint3x4(nextTail)
-                    : nextTail;
-
-                //回転を適用
-                var rotation = parentRotation * logic.localRotation;
-                headTransform.rotation = Quaternion.FromToRotation(rotation * logic.boneAxis,
-                    nextTail - headTransform.position) * rotation;
-
-                // Transformを更新
-                if (parentTransform.HasValue)
-                {
-                    var parentLocalToWorldMatrix = parentTransform.Value.localToWorldMatrix;
-                    headTransform.localRotation = Normalize(Quaternion.Inverse(parentTransform.Value.rotation) * headTransform.rotation);
-                    headTransform.localToWorldMatrix =
-                        parentLocalToWorldMatrix *
-                        Matrix4x4.TRS(
-                            headTransform.localPosition,
-                            headTransform.localRotation,
-                            headTransform.localScale
-                        );
-                    headTransform.worldToLocalMatrix = headTransform.localToWorldMatrix.inverse;
-                }
-                else
-                {
-                    headTransform.localToWorldMatrix =
-                        Matrix4x4.TRS(
-                            headTransform.position,
-                            headTransform.rotation,
-                            headTransform.localScale
-                        );
-                    headTransform.worldToLocalMatrix = headTransform.localToWorldMatrix.inverse;
-                    headTransform.localRotation = headTransform.rotation;
-                }
-
-                if (!model.StopSpringBoneWriteback)
-                {
-                    // SpringBone の結果を Transform に反映する
-                    Transforms[logic.headTransformIndex + transformIndexOffset] = headTransform;
-                }
-                else
-                {
-                    // SpringBone の結果を Transform に反映しないが logic の更新は継続する。
-                    // 再開したときに暴れない。
+                    default:
+                        throw new NotImplementedException();
                 }
             }
+            return nextTail;
         }
 
         /// <summary>
@@ -190,48 +202,48 @@ namespace UniGLTF.SpringBoneJobs
         }
 
         private static void ResolveCapsuleCollision(
-            Vector3 worldTail,
-            Vector3 worldPosition,
-            BlittableTransform headTransform,
+            Vector3 capsuleTail,
+            Vector3 capsuleHead,
+            Vector3 headPosition,
             BlittableJointMutable joint,
             BlittableCollider collider,
             float maxColliderScale,
             BlittableJointImmutable logic,
             ref Vector3 nextTail)
         {
-            var direction = worldTail - worldPosition;
+            var direction = capsuleTail - capsuleHead;
             if (direction.sqrMagnitude == 0)
             {
                 // head側半球の球判定
-                ResolveSphereCollision(joint, collider, worldPosition, headTransform, maxColliderScale, logic, ref nextTail);
+                ResolveSphereCollision(joint, collider, capsuleHead, headPosition, maxColliderScale, logic, ref nextTail);
                 return;
             }
             var P = direction.normalized;
-            var Q = headTransform.position - worldPosition;
+            var Q = headPosition - capsuleHead;
             var dot = Vector3.Dot(P, Q);
             if (dot <= 0)
             {
                 // head側半球の球判定
-                ResolveSphereCollision(joint, collider, worldPosition, headTransform, maxColliderScale, logic, ref nextTail);
+                ResolveSphereCollision(joint, collider, capsuleHead, headPosition, maxColliderScale, logic, ref nextTail);
                 return;
             }
             if (dot >= direction.magnitude)
             {
                 // tail側半球の球判定
-                ResolveSphereCollision(joint, collider, worldTail, headTransform, maxColliderScale, logic, ref nextTail);
+                ResolveSphereCollision(joint, collider, capsuleTail, headPosition, maxColliderScale, logic, ref nextTail);
                 return;
             }
 
             // head-tail上の m_transform.position との最近点
-            var p = worldPosition + P * dot;
-            ResolveSphereCollision(joint, collider, p, headTransform, maxColliderScale, logic, ref nextTail);
+            var p = capsuleHead + P * dot;
+            ResolveSphereCollision(joint, collider, p, headPosition, maxColliderScale, logic, ref nextTail);
         }
 
         private static void ResolveSphereCollision(
             BlittableJointMutable joint,
             BlittableCollider collider,
             Vector3 worldPosition,
-            BlittableTransform headTransform,
+            Vector3 headPosition,
             float maxColliderScale,
             BlittableJointImmutable logic,
             ref Vector3 nextTail)
@@ -243,7 +255,7 @@ namespace UniGLTF.SpringBoneJobs
                 var normal = (nextTail - worldPosition).normalized;
                 var posFromCollider = worldPosition + normal * r;
                 // 長さをboneLengthに強制
-                nextTail = headTransform.position + (posFromCollider - headTransform.position).normalized * logic.length;
+                nextTail = headPosition + (posFromCollider - headPosition).normalized * logic.length;
             }
         }
 
