@@ -65,7 +65,20 @@ namespace UniGLTF.SpringBoneJobs
                 // scaling 対応
                 var scalingFactor = model.SupportsScalingAtRuntime ? TransformExtensions.AbsoluteMaxValue(headTransform.localToWorldMatrix.lossyScale) : 1.0f;
 
-                var nextTail = ExecuteJoint(spring, logicIndex, headTransform.position, parentTransform.rotation, scalingFactor, model.ExternalForce);
+                Vector3 nextTail;
+                if (logic.headJointIndex + 1 != logic.tailJointIndex)
+                {
+                    // 枝分かれ。特別処理
+                    // 第１兄弟の結果を複製する
+                    var firstsiblingLogic = Logics[logicSpan.startIndex + logic.parentJointIndex + 1];
+                    var tailLogic = Logics[logicSpan.startIndex + logic.tailJointIndex];
+                    var d = tailLogic.initPosition - firstsiblingLogic.initPosition;
+                    nextTail = NextTail[logicSpan.startIndex + logic.parentJointIndex + 1] + Quaternion.Inverse(headTransform.rotation) * d;
+                }
+                else
+                {
+                    nextTail = ExecuteJoint(spring, logicIndex, headTransform.position, parentTransform.rotation, scalingFactor, model.ExternalForce);
+                }
                 NextTail[logicIndex] = nextTail;
 
                 if (!model.StopSpringBoneWriteback)

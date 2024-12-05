@@ -54,12 +54,19 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
                     blittableJoints.Add(blittable);
                 }
 
-                // vrm-1.0 では末端の joint は tail で処理対象でないのに注意!
-                for (int i = 0; i < spring.joints.Length - 1; ++i)
+                for (int tailJointIndex = 1; tailJointIndex < spring.joints.Length; ++tailJointIndex)
                 {
-                    var joint = spring.joints[i];
-                    var tailJoint = spring.joints[i + 1];
-                    var localPosition = tailJoint.Transform.localPosition;
+                    var tailJoint = spring.joints[tailJointIndex];
+                    var headJointIndex = spring.GetClosestParentJointIndex(tailJoint);
+                    if (headJointIndex == -1)
+                    {
+                        // データ不正。spring.joints[0] の子孫でない？
+                        continue;
+                    }
+                    var joint = spring.joints[headJointIndex];
+
+                    // v0.128.1 joint が連続でない場合対応
+                    var localPosition = joint.Transform.worldToLocalMatrix.MultiplyPoint(tailJoint.Transform.position);
 
                     var scale = tailJoint.Transform.lossyScale;
                     var localChildPosition = new Vector3(
@@ -68,10 +75,11 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
                             localPosition.z * scale.z
                         );
 
-                    var parentJoint = spring.GetClosestParentJointIndex(joint);
-                    if (parentJoint.HasValue && parentJoint.Value + 1 != i)
+                    var parentJointIndex = spring.GetClosestParentJointIndex(joint);
+                    if (parentJointIndex != -1 && parentJointIndex + 1 != headJointIndex)
                     {
-                        Debug.Log($"枝 [{i}] {parentJoint.Value} => {spring.joints[parentJoint.Value].Transform}");
+                        // 枝がある場合は連番でない
+                        Debug.Log($"枝 [{tailJointIndex}] {parentJointIndex} => {spring.joints[headJointIndex].Transform}");
                     }
 
                     blittableLogics.Add(new BlittableJointImmutable
@@ -82,7 +90,9 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
                         initPosition = joint.DefaultLocalPosition,
                         boneAxis = localChildPosition.normalized,
                         length = localChildPosition.magnitude,
-                        parentJointIndex = parentJoint.HasValue ? parentJoint.Value : -1,
+                        parentJointIndex = parentJointIndex,
+                        headJointIndex = headJointIndex,
+                        tailJointIndex = tailJointIndex,
                     });
                 }
             }

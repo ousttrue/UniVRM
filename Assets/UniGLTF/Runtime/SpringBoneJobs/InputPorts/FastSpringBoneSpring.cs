@@ -11,13 +11,13 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
         public FastSpringBoneJoint[] joints;
         public FastSpringBoneCollider[] colliders;
 
-        public int? GetClosestParentJointIndex(FastSpringBoneJoint joint)
+        public int GetClosestParentJointIndex(FastSpringBoneJoint joint)
         {
             // joints は親子順に sort 済みとする
             var parent = joints.Select((x, i) => (x, i)).Where(xi => xi.x.Transform != joint.Transform && joint.Transform.IsChildOf(xi.x.Transform)).LastOrDefault();
             if (parent.x.Transform == null)
             {
-                return default;
+                return -1;
             }
             return parent.i;
         }

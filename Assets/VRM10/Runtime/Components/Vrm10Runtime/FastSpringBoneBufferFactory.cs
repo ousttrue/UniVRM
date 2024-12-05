@@ -66,11 +66,14 @@ namespace UniVRM10
                 }
 
                 joints.Clear();
-                foreach (var joint in spring.Joints)
+
+                // JOINT が hierarchy 順に並んでいること確実にする
+                var root = spring.Joints[0].transform;
+                foreach (var transform in root.GetComponentsInChildren<Transform>())
                 {
+                    var joint = spring.GetJointForTransform(transform);
                     if (joint == null)
                     {
-                        // Debug.LogWarning("null joint", vrm.transform);
                         continue;
                     }
                     if (joints.Any(x => x.Transform == joint.transform))
@@ -79,21 +82,7 @@ namespace UniVRM10
                         continue;
                     }
 
-                    int i = 0;
-                    if (joints.Count > 0)
-                    {
-                        for (; i < joints.Count; ++i)
-                        {
-                            // JOINT が 親子順に並んでいること確実にする
-                            if (!joint.transform.IsChildOf(joints[i].Transform))
-                            {
-                                break;
-                            }
-                        }
-                    }
-                    Debug.Assert(joints.Skip(1).All(x => x.Transform.IsChildOf(joints[0].Transform)));
-
-                    joints.Insert(i, new FastSpringBoneJoint
+                    joints.Add(new FastSpringBoneJoint
                     {
                         Transform = joint.transform,
                         Joint = new BlittableJointMutable

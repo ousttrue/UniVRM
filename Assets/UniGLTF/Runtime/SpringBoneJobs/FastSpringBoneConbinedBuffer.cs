@@ -144,7 +144,14 @@ namespace UniGLTF.SpringBoneJobs
                 for (var j = 0; j < _batchedBufferLogicSizes[i]; ++j)
                 {
                     var head = buffer.Logics[j].headTransformIndex;
-                    _jointMap.Add(buffer.Transforms[head], logicsOffset + j);
+                    if (_jointMap.ContainsKey(buffer.Transforms[head]))
+                    {
+                        // 枝
+                    }
+                    else
+                    {
+                        _jointMap.Add(buffer.Transforms[head], logicsOffset + j);
+                    }
                 }
 
                 // 速度の維持

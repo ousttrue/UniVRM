@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace UniVRM10
@@ -39,6 +40,11 @@ namespace UniVRM10
             public Spring(string name)
             {
                 Name = name;
+            }
+
+            public VRM10SpringBoneJoint GetJointForTransform(Transform t)
+            {
+                return Joints.FirstOrDefault(x => x.transform == t);
             }
 
             static Color JointColor(VRM10SpringBoneJoint joint)

@@ -21,6 +21,8 @@ namespace UniGLTF.SpringBoneJobs.Blittables
         public Vector3 boneAxis;
 
         public int parentJointIndex;
+        public int headJointIndex;
+        public int tailJointIndex;
 
         public void DrawGizmo(BlittableTransform t, BlittableJointMutable m)
         {
