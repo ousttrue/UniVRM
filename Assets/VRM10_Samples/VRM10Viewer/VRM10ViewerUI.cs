@@ -22,7 +22,16 @@ namespace UniVRM10.VRM10Viewer
         [SerializeField]
         Transform m_faceCamera = default;
 
+        [SerializeField]
+        Material m_customPBR = default;
+
+        [SerializeField]
+        Material m_customMToon = default;
+
         [Header("UI")]
+        [SerializeField]
+        Toggle m_useCustomMaterial = default;
+
         [SerializeField]
         Button m_openModel = default;
 
@@ -365,6 +374,7 @@ namespace UniVRM10.VRM10Viewer
         {
             var map = new ObjectMap(gameObject);
             Root = map.Objects["Root"];
+            m_useCustomMaterial = map.Get<Toggle>("UseCustomMaterial");
             m_openModel = map.Get<Button>("OpenModel");
             m_openMotion = map.Get<Button>("OpenMotion");
             m_pastePose = map.Get<Button>("PastePose");
@@ -768,28 +778,19 @@ namespace UniVRM10.VRM10Viewer
             }
         }
 
-        static IMaterialDescriptorGenerator GetVrmMaterialDescriptorGenerator(bool useUrp)
+        IMaterialDescriptorGenerator GetMaterialDescriptorGenerator()
         {
-            if (useUrp)
+            if (m_useCustomMaterial.isOn)
             {
-                return new UrpVrm10MaterialDescriptorGenerator();
-            }
-            else
-            {
-                return new BuiltInVrm10MaterialDescriptorGenerator();
-            }
-        }
+                // https://github.com/vrm-c/UniVRM/issues/2548
+                // 
+                // WebGL 環境では https://docs.unity3d.com/ja/Packages/com.unity.shadergraph@10.0/manual/index.html
+                // 版のマテリアルを使う。
 
-        static IMaterialDescriptorGenerator GetMaterialDescriptorGenerator(bool useUrp)
-        {
-            if (useUrp)
-            {
-                return new UrpGltfMaterialDescriptorGenerator();
+                return new VRM10ViewerWebGLMaterialDescriptorGenerator(m_customPBR, m_customMToon);
             }
-            else
-            {
-                return new BuiltInGltfMaterialDescriptorGenerator();
-            }
+
+            return null;
         }
 
         IAwaitCaller GetIAwaitCaller()
@@ -830,6 +831,7 @@ namespace UniVRM10.VRM10Viewer
                     canLoadVrm0X: true,
                     showMeshes: false,
                     awaitCaller: GetIAwaitCaller(),
+                    materialGenerator: GetMaterialDescriptorGenerator(),
                     vrmMetaInformationCallback: m_texts.UpdateMeta,
                     ct: cancellationToken,
                     springboneRuntime: m_useSpringboneSingelton.isOn ? new Vrm10FastSpringboneRuntime() : new Vrm10FastSpringboneRuntimeStandalone());
