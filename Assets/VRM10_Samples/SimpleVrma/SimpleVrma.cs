@@ -13,6 +13,7 @@ public class SimpleVrma : MonoBehaviour
     public Vrm10AnimationInstance Vrma;
 
     bool m_boxman = true;
+    SkinnedMeshRenderer m_boxmanRenderer;
 
     void OnGUI()
     {
@@ -33,9 +34,9 @@ public class SimpleVrma : MonoBehaviour
 #endif
 
         m_boxman = GUILayout.Toggle(m_boxman, "BoxMan");
-        if (Vrma != null)
+        if (m_boxmanRenderer != null)
         {
-            Vrma.BoxMan.enabled = m_boxman;
+            m_boxmanRenderer.enabled = m_boxman;
         }
     }
 
@@ -57,9 +58,14 @@ public class SimpleVrma : MonoBehaviour
         using var loader = new VrmAnimationImporter(data);
         var instance = await loader.LoadAsync(new ImmediateCaller());
 
+        if (Vrma != null)
+        {
+            Vrma.Dispose();
+        }
         Vrma = instance.GetComponent<Vrm10AnimationInstance>();
         Vrm.Runtime.VrmAnimation = Vrma;
         UniGLTFLogger.Log($"{Vrma}");
+        m_boxmanRenderer = ((IVrm10Animation)Vrma).MakeBoxMan();
 
         var animation = Vrma.GetComponent<Animation>();
         animation.Play();

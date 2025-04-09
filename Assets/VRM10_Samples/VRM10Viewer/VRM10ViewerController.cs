@@ -88,10 +88,17 @@ namespace UniVRM10.VRM10Viewer
                     m_src.Dispose();
                 }
                 m_src = value;
+                m_boxman = m_src.MakeBoxMan();
+                if (GraphicsSettings.renderPipelineAsset != null
+                    && m_pbrAlphaBlendMaterial != null)
+                {
+                    m_boxman.material = GameObject.Instantiate(m_pbrOpaqueMaterial);
+                }
 
                 TPose = new Vrm10TPose(m_src.ControlRig.Item1.GetRawHipsPosition());
             }
         }
+        SkinnedMeshRenderer m_boxman;
 
         public event VrmMetaInformationCallback OnUpdateMeta;
         void RaiseUpdateMeta(Texture2D thumbnail, UniGLTF.Extensions.VRMC_vrm.Meta vrm10Meta, Migration.Vrm0Meta vrm0Meta)
@@ -114,11 +121,6 @@ namespace UniVRM10.VRM10Viewer
             if (m_motion != null)
             {
                 Motion = BvhMotion.LoadBvhFromText(m_motion.text);
-                if (GraphicsSettings.renderPipelineAsset != null
-                    && m_pbrAlphaBlendMaterial != null)
-                {
-                    Motion.SetBoxManMaterial(GameObject.Instantiate(m_pbrOpaqueMaterial));
-                }
             }
 
             if (ArgumentChecker.TryGetFirstLoadable(out var cmd))
@@ -129,9 +131,9 @@ namespace UniVRM10.VRM10Viewer
 
         public void ShowBoxMan(bool show)
         {
-            if (Motion != null)
+            if (m_boxman != null)
             {
-                Motion.ShowBoxMan(show);
+                m_boxman.enabled = show;
             }
         }
 

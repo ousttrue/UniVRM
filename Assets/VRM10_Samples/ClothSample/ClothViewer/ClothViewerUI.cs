@@ -94,10 +94,12 @@ namespace UniVRM10.Cloth.Viewer
                     m_src.Dispose();
                 }
                 m_src = value;
+                m_boxman = m_src.MakeBoxMan();
 
                 TPose = new Vrm10TPose(m_src.ControlRig.Item1.GetRawHipsPosition());
             }
         }
+        SkinnedMeshRenderer m_boxman;
 
         public IVrm10Animation TPose;
 
@@ -209,9 +211,9 @@ namespace UniVRM10.Cloth.Viewer
                 }
             }
 
-            if (Motion != null)
+            if (m_boxman != null)
             {
-                Motion.ShowBoxMan(m_showBoxMan.isOn);
+                m_boxman.enabled = m_showBoxMan.isOn;
             }
 
             if (m_loaded != null)

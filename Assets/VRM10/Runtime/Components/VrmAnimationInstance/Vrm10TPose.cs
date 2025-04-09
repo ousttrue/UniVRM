@@ -51,6 +51,8 @@ namespace UniVRM10
 
         public LookAtInput? LookAt { get; }
 
+        public Animator Animator => null;
+
         public Vrm10TPose(Vector3 hips)
         {
             ControlRig = (new NoRotation(hips), new Skeleton(hips));
@@ -59,14 +61,6 @@ namespace UniVRM10
         }
 
         public void Dispose()
-        {
-        }
-
-        public void ShowBoxMan(bool enable)
-        {
-        }
-
-        public void SetBoxManMaterial(Material material)
         {
         }
     }

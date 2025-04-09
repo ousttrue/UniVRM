@@ -9,17 +9,6 @@ namespace UniVRM10
 {
     public class Vrm10AnimationInstance : MonoBehaviour, IVrm10Animation, ITimeControl
     {
-        public SkinnedMeshRenderer BoxMan;
-        public void ShowBoxMan(bool enable)
-        {
-            BoxMan.enabled = enable;
-        }
-
-        public void SetBoxManMaterial(Material material)
-        {
-            BoxMan.material = material;
-        }
-
         public void Dispose()
         {
             if (Application.isPlaying)
@@ -41,6 +30,8 @@ namespace UniVRM10
         public IReadOnlyDictionary<ExpressionKey, Action<float>> ExpressionSetterMap => _ExpressionSetterMap;
 
         public LookAtInput? LookAt { get; set; }
+
+        public Animator Animator => this.GetComponentOrThrow<Animator>();
 
         void InitializeExpression(ExpressionKey key, Func<float> getter, Action<float> setter)
         {
@@ -177,7 +168,7 @@ namespace UniVRM10
         public float custom_98;
         public float custom_99;
 
-        public void Initialize(IEnumerable<ExpressionKey> keys, Material material)
+        public void Initialize(IEnumerable<ExpressionKey> keys)
         {
             var humanoid = gameObject.AddComponent<Humanoid>();
             if (humanoid.AssignBonesFromAnimator())
@@ -185,13 +176,6 @@ namespace UniVRM10
                 // require: transform is T-Pose 
                 var provider = new InitRotationPoseProvider(transform, humanoid);
                 ControlRig = (provider, provider);
-
-                // create SkinnedMesh for bone visualize
-                var animator = this.GetComponentOrThrow<Animator>();
-                BoxMan = SkeletonMeshUtility.CreateRenderer(animator);
-                BoxMan.sharedMaterial = material;
-                var mesh = BoxMan.sharedMesh;
-                mesh.name = "box-man";
             }
 
             int customIndex = 0;

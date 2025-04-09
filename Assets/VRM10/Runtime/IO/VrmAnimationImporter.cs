@@ -16,6 +16,7 @@ namespace UniVRM10
         VRMC_vrm_animation m_vrma;
         ExpressionInfo[] m_expressions;
         Material m_defaultMaterial;
+        SkinnedMeshRenderer m_boxman;
 
         public VrmAnimationImporter(GltfData data,
                 IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null,
@@ -293,7 +294,9 @@ namespace UniVRM10
 
             var animationInstance = Root.AddComponent<Vrm10AnimationInstance>();
 
-            animationInstance.Initialize(m_expressions.Select(x => x.Key), m_defaultMaterial);
+            animationInstance.Initialize(m_expressions.Select(x => x.Key));
+            m_boxman = ((IVrm10Animation)animationInstance).MakeBoxMan();
+            m_boxman.material = m_defaultMaterial;
 
             return Task.CompletedTask;
         }
@@ -301,7 +304,7 @@ namespace UniVRM10
         public override void TransferOwnership(TakeResponsibilityForDestroyObjectFunc take)
         {
             var animationInstance = Root.GetComponent<Vrm10AnimationInstance>();
-            take(SubAssetKey.Create(animationInstance.BoxMan.sharedMesh), animationInstance.BoxMan.sharedMesh);
+            take(SubAssetKey.Create(m_boxman.sharedMesh), m_boxman.sharedMesh);
 
             var animator = Root.GetComponent<Animator>();
             take(SubAssetKey.Create(animator.avatar), animator.avatar);

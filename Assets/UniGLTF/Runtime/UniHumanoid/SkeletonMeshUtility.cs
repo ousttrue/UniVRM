@@ -226,6 +226,9 @@ namespace UniHumanoid
 
         };
 
+        /// <summary>
+        /// SkinnedMeshRenderer.sharedMesh の管理に注意
+        /// </summary>
         public static SkinnedMeshRenderer CreateRenderer(Animator animator)
         {
             var bones = animator.transform.Traverse().ToList();
