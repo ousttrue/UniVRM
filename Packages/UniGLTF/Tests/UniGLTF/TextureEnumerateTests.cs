@@ -232,7 +232,7 @@ namespace UniGLTF
         {
             return new GltfData(
                 string.Empty,
-                string.Empty,
+                Array.Empty<byte>(),
                 gltf,
                 new List<GlbChunk>(),
                 default,

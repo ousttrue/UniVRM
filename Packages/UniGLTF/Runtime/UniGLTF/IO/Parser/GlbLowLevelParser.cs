@@ -35,7 +35,7 @@ namespace UniGLTF
                 var jsonBytes = chunks[0].Bytes;
                 return ParseGltf(
                     path,
-                    Encoding.UTF8.GetString(jsonBytes.Span),
+                    jsonBytes,
                     chunks,
                     default,
                     new MigrationFlags()
@@ -79,6 +79,11 @@ namespace UniGLTF
         }
 
         internal static GltfData ParseGltf(string path, Utf8String json, IReadOnlyList<GlbChunk> chunks, IStorage storage, MigrationFlags migrationFlags)
+        {
+            return ParseGltf(path, json.Bytes, chunks, storage, migrationFlags);
+        }
+
+        public static GltfData ParseGltf(string path, ReadOnlyMemory<byte> json, IReadOnlyList<GlbChunk> chunks, IStorage storage, MigrationFlags migrationFlags)
         {
             var jsonNode = json.ParseAsJson();
             var GLTF = GltfDeserializer.Deserialize(jsonNode);
