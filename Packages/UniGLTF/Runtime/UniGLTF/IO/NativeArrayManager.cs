@@ -87,6 +87,15 @@ namespace UniGLTF
             return array;
         }
 
+        public NativeArray<T> CreateNativeArray<T>(ReadOnlyMemory<T> data) where T : struct
+        {
+            var array = CreateNativeArray<T>(data.Length);
+            var toSpan = array.AsSpan();
+            var fromSpan = data.Span;
+            fromSpan.CopyTo(toSpan);
+            return array;
+        }
+
         /// <summary>
         /// サイズの違う型にコピーする。
         /// 

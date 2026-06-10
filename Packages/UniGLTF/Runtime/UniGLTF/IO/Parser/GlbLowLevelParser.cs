@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
 using UniJSON;
 
@@ -24,15 +25,17 @@ namespace UniGLTF
             _binary = specifiedBinary;
         }
 
-        public GltfData Parse()
+        public GltfData Parse() => Parse(_path, _binary);
+
+        public static GltfData Parse(string path, ReadOnlyMemory<byte> binary)
         {
             try
             {
-                var chunks = ParseGlbChunks(_binary);
+                var chunks = ParseGlbChunks(binary);
                 var jsonBytes = chunks[0].Bytes;
                 return ParseGltf(
-                    _path,
-                    new Utf8String(new ArraySegment<byte>(jsonBytes.Array, jsonBytes.Offset, jsonBytes.Count)),
+                    path,
+                    Encoding.UTF8.GetString(jsonBytes.Span),
                     chunks,
                     default,
                     new MigrationFlags()
@@ -48,7 +51,7 @@ namespace UniGLTF
             }
         }
 
-        public static List<GlbChunk> ParseGlbChunks(byte[] data)
+        public static List<GlbChunk> ParseGlbChunks(ReadOnlyMemory<byte> data)
         {
             var chunks = glbImporter.ParseGlbChunks(data);
 
