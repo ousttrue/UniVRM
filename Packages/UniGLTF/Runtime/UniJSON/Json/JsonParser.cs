@@ -153,7 +153,7 @@ namespace UniJSON
             }
 
             // fix array range
-            var count = current.Bytes.Offset + 1 - segment.Bytes.Offset;
+            var count = segment.ByteLength - current.ByteLength + 1;
             array.SetValueBytesCount(count);
             
             return array;
@@ -242,7 +242,7 @@ namespace UniJSON
             }
 
             // fix obj range
-            var count = current.Bytes.Offset + 1 - segment.Bytes.Offset;
+            var count = segment.ByteLength - current.ByteLength + 1;
             obj.SetValueBytesCount(count);
 
             return obj;

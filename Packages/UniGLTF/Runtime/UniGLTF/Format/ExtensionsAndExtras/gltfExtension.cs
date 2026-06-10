@@ -130,8 +130,7 @@ namespace UniGLTF
 
         public override string ToString()
         {
-            var bytes = m_json.Value.Bytes;
-            return "import: " + Encoding.UTF8.GetString(bytes.Array, bytes.Offset, bytes.Count);
+            return "import: " + Encoding.UTF8.GetString(m_json.Value.Bytes.Span);
         }
 
         public IEnumerable<KeyValuePair<JsonNode, JsonNode>> ObjectItems()
@@ -147,7 +146,7 @@ namespace UniGLTF
 
         public override void Serialize(JsonFormatter f)
         {
-            f.Raw(m_json.Value.Bytes);
+            f.Raw(m_json.Value.Bytes.Span);
         }
     }
 

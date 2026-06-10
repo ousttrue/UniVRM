@@ -8,10 +8,10 @@ namespace UniJSON
     {
         public static readonly System.Text.Encoding Encoding = new System.Text.UTF8Encoding(false);
 
-        public readonly ArraySegment<Byte> Bytes;
+        public readonly ReadOnlyMemory<Byte> Bytes;
         public int ByteLength
         {
-            get { return Bytes.Count; }
+            get { return Bytes.Length; }
         }
 
         public Utf8Iterator GetIterator()
@@ -49,20 +49,27 @@ namespace UniJSON
 
         public Byte this[int i]
         {
-            get { return Bytes.Array[Bytes.Offset + i]; }
+            get { return Bytes.Span[i]; }
         }
 
-        public Utf8String(ArraySegment<Byte> bytes)
+        public Utf8String(ReadOnlyMemory<Byte> bytes)
         {
             Bytes = bytes;
         }
 
-        public Utf8String(Byte[] bytes, int offset, int count) : this(new ArraySegment<Byte>(bytes, offset, count))
+        public Utf8String(ArraySegment<Byte> bytes)
         {
+            Bytes = new ReadOnlyMemory<Byte>(bytes.Array, bytes.Offset, bytes.Count);
         }
 
-        public Utf8String(Byte[] bytes) : this(bytes, 0, bytes.Length)
+        public Utf8String(Byte[] bytes, int offset, int count)
         {
+            Bytes = new ReadOnlyMemory<Byte>(bytes, offset, count);
+        }
+
+        public Utf8String(Byte[] bytes)
+        {
+            Bytes = new ReadOnlyMemory<Byte>(bytes);
         }
 
         public static Utf8String From(string src)
@@ -99,14 +106,14 @@ namespace UniJSON
                     bytes[pos++] = (byte)(Utf8Iterator.Head1 | Utf8Iterator.Mask6 & (c));
                 }
             }
-            return new Utf8String(new ArraySegment<byte>(bytes, 0, pos));
+            return new Utf8String(bytes, 0, pos);
         }
 
         public Utf8String Concat(Utf8String rhs)
         {
             var bytes = new Byte[ByteLength + rhs.ByteLength];
-            Buffer.BlockCopy(Bytes.Array, Bytes.Offset, bytes, 0, ByteLength);
-            Buffer.BlockCopy(rhs.Bytes.Array, rhs.Bytes.Offset, bytes, ByteLength, rhs.ByteLength);
+            Bytes.Span.CopyTo(bytes);
+            rhs.Bytes.Span.CopyTo(bytes.AsSpan(ByteLength));
             return new Utf8String(bytes);
         }
 
@@ -115,13 +122,13 @@ namespace UniJSON
         public override string ToString()
         {
             if (ByteLength == 0) return "";
-            return Encoding.GetString(Bytes.Array, Bytes.Offset, Bytes.Count);
+            return Encoding.GetString(Bytes.Span);
         }
 
         public string ToAscii()
         {
             if (ByteLength == 0) return "";
-            return System.Text.Encoding.ASCII.GetString(Bytes.Array, Bytes.Offset, Bytes.Count);
+            return System.Text.Encoding.ASCII.GetString(Bytes.Span);
         }
 
         public bool IsEmpty
@@ -175,12 +182,12 @@ namespace UniJSON
 
         public int IndexOf(int offset, Byte code)
         {
-            var pos = offset + Bytes.Offset;
-            for (int i = 0; i < Bytes.Count; ++i, ++pos)
+            var span = Bytes.Span;
+            for (int i = offset; i < span.Length; ++i)
             {
-                if (Bytes.Array[pos] == code)
+                if (span[i] == code)
                 {
-                    return pos - Bytes.Offset;
+                    return i;
                 }
             }
             return -1;
@@ -193,7 +200,7 @@ namespace UniJSON
 
         public Utf8String Subbytes(int offset, int count)
         {
-            return new Utf8String(Bytes.Array, Bytes.Offset + offset, count);
+            return new Utf8String(Bytes.Slice(offset, count));
         }
 
         static bool IsSpace(Byte b)
@@ -283,7 +290,7 @@ namespace UniJSON
 
         public static Utf8String operator +(Utf8String l, Utf8String r)
         {
-            return new Utf8String(l.Bytes.Concat(r.Bytes));
+            return l.Concat(r);
         }
 
         public bool IsInt

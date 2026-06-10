@@ -93,6 +93,13 @@ namespace UniJSON
             m_pos += bytes.Count;
         }
 
+        public void Write(ReadOnlySpan<byte> bytes)
+        {
+            Require(bytes.Length);
+            bytes.CopyTo(new Span<byte>(m_buffer, m_pos, bytes.Length));
+            m_pos += bytes.Length;
+        }
+
         public void Write(sbyte value)
         {
             Require(Marshal.SizeOf(value));

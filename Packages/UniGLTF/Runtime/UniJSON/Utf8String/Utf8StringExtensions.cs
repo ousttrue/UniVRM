@@ -11,7 +11,7 @@ namespace UniJSON
     {
         public static void WriteTo(this Utf8String src, Stream dst)
         {
-            dst.Write(src.Bytes.Array, src.Bytes.Offset, src.Bytes.Count);
+            dst.Write(src.Bytes.Span);
         }
 
         public static Utf8Iterator GetFirst(this Utf8String src)

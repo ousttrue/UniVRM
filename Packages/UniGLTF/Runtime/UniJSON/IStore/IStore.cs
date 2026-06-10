@@ -33,6 +33,7 @@ namespace UniJSON
         void WriteLittleEndian(Double value);
 
         void Write(ArraySegment<Byte> bytes);
+        void Write(ReadOnlySpan<Byte> bytes) => Write(new ArraySegment<Byte>(bytes.ToArray()));
 
         void Write(string src);
         void Write(char c);
@@ -53,6 +54,11 @@ namespace UniJSON
         public static void Write(this IStore s, IEnumerable<Byte> bytes)
         {
             s.Write(new ArraySegment<Byte>(bytes.ToArray()));
+        }
+
+        public static void Write(this IStore s, ReadOnlyMemory<Byte> bytes)
+        {
+            s.Write(bytes.Span);
         }
 
         public static Utf8String ToUtf8String(this IStore s)
