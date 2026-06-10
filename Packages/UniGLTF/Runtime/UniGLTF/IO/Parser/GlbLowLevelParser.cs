@@ -80,15 +80,14 @@ namespace UniGLTF
 
         internal static GltfData ParseGltf(string path, Utf8String json, IReadOnlyList<GlbChunk> chunks, IStorage storage, MigrationFlags migrationFlags)
         {
-            var parsedJson = json.ParseAsJson();
-            var GLTF = GltfDeserializer.Deserialize(parsedJson);
-            if (GLTF.asset.version != "2.0")
+            var jsonNode = json.ParseAsJson();
+            var GLTF = GltfDeserializer.Deserialize(jsonNode);
             {
                 throw new UniGLTFException("unknown gltf version {0}", GLTF.asset.version);
             }
 
             // Version Compatibility
-            RestoreOlderVersionValues(parsedJson, GLTF);
+            RestoreOlderVersionValues(jsonNode, GLTF);
 
             FixMeshNameUnique(GLTF);
             FixBlendShapeNameUnique(GLTF);
@@ -306,7 +305,7 @@ namespace UniGLTF
             }
         }
 
-        private static void RestoreOlderVersionValues(JsonNode parsed, glTF GLTF)
+        private static void RestoreOlderVersionValues(JsonNode jsonNode, glTF GLTF)
         {
             for (int i = 0; i < GLTF.images.Count; ++i)
             {
@@ -314,7 +313,7 @@ namespace UniGLTF
                 {
                     try
                     {
-                        var extraName = parsed["images"][i]["extra"]["name"].Value.GetString();
+                        var extraName = jsonNode["images"][i]["extra"]["name"].Value.GetString();
                         if (!string.IsNullOrEmpty(extraName))
                         {
                             GLTF.images[i].name = extraName;
