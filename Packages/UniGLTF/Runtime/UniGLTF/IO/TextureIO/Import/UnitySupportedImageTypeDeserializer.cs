@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Unity.Collections;
 using UnityEngine;
 
 namespace UniGLTF
@@ -29,12 +30,17 @@ namespace UniGLTF
 
         public async Task<Texture2D> LoadTextureAsync(DeserializingTextureInfo textureInfo, IAwaitCaller awaitCaller)
         {
-            if (textureInfo.ImageData == null) return null;
+            if (!textureInfo.ImageData.IsCreated) return null;
 
             try
             {
                 var texture = new Texture2D(2, 2, TextureFormat.ARGB32, textureInfo.UseMipmap, textureInfo.ColorSpace == ColorSpace.Linear);
-                texture.LoadImage(textureInfo.ImageData, ImportedTexturesAccessibility.ToMarkNonReadable());
+#if UNITY_6000_0_OR_NEWER
+                // Unity 6000.0.42f1 以降は LoadImage が ReadOnlySpan を受け取れるため、NativeArray からのコピーを避ける。
+                texture.LoadImage(textureInfo.ImageData.AsReadOnlySpan(), ImportedTexturesAccessibility.ToMarkNonReadable());
+#else
+                texture.LoadImage(textureInfo.ImageData.ToArray(), ImportedTexturesAccessibility.ToMarkNonReadable());
+#endif
                 await awaitCaller.NextFrame();
 
                 texture.wrapModeU = textureInfo.WrapModeU;

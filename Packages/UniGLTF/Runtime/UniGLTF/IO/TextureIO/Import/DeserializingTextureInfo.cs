@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Unity.Collections;
+using UnityEngine;
 
 namespace UniGLTF
 {
@@ -8,9 +9,11 @@ namespace UniGLTF
     public sealed class DeserializingTextureInfo
     {
         /// <summary>
-        /// Texture のバイト列
+        /// Texture のバイト列。
+        /// GltfData が保持する NativeArray をコピーせずそのまま参照するため、Dispose してはならない。
+        /// 未設定の場合は IsCreated == false となる。
         /// </summary>
-        public byte[] ImageData { get; }
+        public NativeArray<byte> ImageData { get; }
 
         /// <summary>
         /// Texture の mimeType
@@ -44,7 +47,7 @@ namespace UniGLTF
 
         public TextureImportTypes ImportTypes { get; }
 
-        public DeserializingTextureInfo(byte[] imageData, string dataMimeType, ColorSpace colorSpace, bool useMipmap, FilterMode filterMode, TextureWrapMode wrapModeU, TextureWrapMode wrapModeV)
+        public DeserializingTextureInfo(NativeArray<byte> imageData, string dataMimeType, ColorSpace colorSpace, bool useMipmap, FilterMode filterMode, TextureWrapMode wrapModeU, TextureWrapMode wrapModeV)
         {
             ImageData = imageData;
             DataMimeType = dataMimeType;
@@ -55,7 +58,7 @@ namespace UniGLTF
             WrapModeV = wrapModeV;
         }
 
-        public DeserializingTextureInfo(byte[] imageData, string dataMimeType, ColorSpace colorSpace, SamplerParam samplerParam, TextureImportTypes importTypes)
+        public DeserializingTextureInfo(NativeArray<byte> imageData, string dataMimeType, ColorSpace colorSpace, SamplerParam samplerParam, TextureImportTypes importTypes)
         {
             ImageData = imageData;
             DataMimeType = dataMimeType;

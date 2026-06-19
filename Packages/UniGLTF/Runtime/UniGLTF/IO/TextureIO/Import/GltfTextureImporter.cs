@@ -23,11 +23,7 @@ namespace UniGLTF
                 TextureImportTypes.sRGB,
                 default,
                 default,
-                () =>
-                {
-                    var imageBytes = data.GetBytesFromImage(imageIndex);
-                    return Task.FromResult<(byte[], string)?>((ToArray(imageBytes?.binary ?? default), imageBytes?.mimeType));
-                },
+                () => Task.FromResult(GetImageBytesFromImageIndex(data, imageIndex)),
                 default, default, default, default, default);
             return (texDesc.SubAssetKey, texDesc);
         }
@@ -214,19 +210,10 @@ namespace UniGLTF
             return (offset, scale);
         }
 
-        private static (byte[] binary, string mimeType)? GetImageBytesFromImageIndex(GltfData data, int imageIndex)
+        private static (NativeArray<byte> binary, string mimeType)? GetImageBytesFromImageIndex(GltfData data, int imageIndex)
         {
-            if (imageIndex >= 0 && imageIndex < data.GLTF.images.Count)
-            {
-                var imageBytes = data.GetBytesFromImage(imageIndex);
-                if (imageBytes.HasValue)
-                {
-
-                    return (ToArray(imageBytes.Value.binary), imageBytes.Value.mimeType);
-                }
-            }
-
-            return default;
+            // NOTE: GltfData が保持する NativeArray をコピーせずそのまま返す。
+            return data.GetBytesFromImage(imageIndex);
         }
 
         private static int? GetImageIndexFromTextureIndex(GltfData data, int textureIndex)
@@ -271,26 +258,6 @@ namespace UniGLTF
                 throw new UniGLTFNotSupportedException("KHR_texture_basisu is only supported with all textures Y-flipped.");
             }
             return true;
-        }
-
-
-        private static byte[] ToArray(NativeArray<byte> bytes)
-        {
-            // if (bytes.Array == null)
-            // {
-            //     return new byte[] { };
-            // }
-            // else if (bytes.Offset == 0 && bytes.Count == bytes.Array.Length)
-            // {
-            //     return bytes.Array;
-            // }
-            // else
-            // {
-            //     var result = new byte[bytes.Count];
-            //     Buffer.BlockCopy(bytes.Array, bytes.Offset, result, 0, result.Length);
-            //     return result;
-            // }
-            return bytes.ToArray();
         }
     }
 }
