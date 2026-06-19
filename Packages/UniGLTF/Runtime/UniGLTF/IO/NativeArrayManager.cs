@@ -93,7 +93,7 @@ namespace UniGLTF
             unsafe
             {
                 var handle = data.Pin();
-                var nativeArray = NativeArrayUnsafeUtility.ConvertExistingDataToNativeArray<T>(handle.Pointer, data.Length, Allocator.Persistent);
+                var nativeArray = NativeArrayUnsafeUtility.ConvertExistingDataToNativeArray<T>(handle.Pointer, data.Length, Allocator.None);
                 m_disposables.Add(nativeArray);
                 m_disposables.Add(handle);
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
