@@ -76,7 +76,7 @@ namespace UniGLTF
             }
 
             int pos = 0;
-            if (!bytes[..4].Span.SequenceEqual(GLB_MAGIC_BYTES.Span))
+            if (!bytes.Span.StartsWith(GLB_MAGIC_BYTES.Span))
             {
                 throw new GlbParseException("invalid magic");
             }
