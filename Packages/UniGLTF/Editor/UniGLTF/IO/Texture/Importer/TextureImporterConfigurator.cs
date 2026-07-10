@@ -88,9 +88,13 @@ namespace UniGLTF
             // UnityException: Calls to "AssetDatabase.ImportAsset" are restricted during asset importing.
             // Please make sure this function is not called from ScriptedImporters or PostProcessors,
             // as it is a source of non-determinism.
-            UnityEditor.EditorApplication.delayCall += () =>
+            var assetPath = importer.assetPath;
+            EditorApplication.delayCall += () =>
             {
-                importer.SaveAndReimport();
+                if (AssetImporter.GetAtPath(assetPath) is TextureImporter i)
+                {
+                    i.SaveAndReimport();
+                }
             };
         }
     }
