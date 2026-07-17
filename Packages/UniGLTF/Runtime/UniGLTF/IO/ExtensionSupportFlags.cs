@@ -14,7 +14,7 @@
         /// Unity は内部で画像を Y 軸反転させているため、あらかじめ Y 軸反転させておくほうが効率的であり、その場合に対応。
         /// https://docs.unity3d.com/Packages/com.unity.cloud.ktx@3.2/manual/creating-textures.html
         /// </summary>
-        public bool IsAllTexturesYFlipped { get; set; }
+        public bool IsAllTexturesYFlipped { get; set; } = true;
 
         public void CopyValueFrom(ExtensionSupportFlags src)
         {
