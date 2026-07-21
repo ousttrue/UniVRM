@@ -10,6 +10,7 @@ namespace UniVRM10
     {
         public static IExpressionValidatorFactory ExpressionValidatorFactory = new DefaultExpressionValidator.Factory();
 
+        private bool _isPrefabInstance;
         private List<ExpressionKey> _keys = new List<ExpressionKey>();
         private Dictionary<ExpressionKey, float> _inputWeights = new Dictionary<ExpressionKey, float>();
         private Dictionary<ExpressionKey, float> _actualWeights = new Dictionary<ExpressionKey, float>();
@@ -25,12 +26,13 @@ namespace UniVRM10
         public float LookAtOverrideRate { get; private set; }
         public float MouthOverrideRate { get; private set; }
 
-        internal Vrm10RuntimeExpression(Vrm10Instance target, 
-            ILookAtEyeDirectionApplicable eyeDirectionApplicable, 
+        internal Vrm10RuntimeExpression(Vrm10Instance target,
+            ILookAtEyeDirectionApplicable eyeDirectionApplicable,
             bool isPrefabInstance,
             IReadOnlyDictionary<Transform, TransformState> initPose
             )
         {
+            _isPrefabInstance = isPrefabInstance;
             _merger = new ExpressionMerger(target.Vrm.Expression, target.transform, isPrefabInstance, initPose);
             _keys = target.Vrm.Expression.Clips
                 .Select(x => target.Vrm.Expression.CreateKey(x.Clip))
@@ -53,6 +55,33 @@ namespace UniVRM10
             );
             _validator = ExpressionValidatorFactory.Create(target.Vrm.Expression);
             _eyeDirectionApplicable = eyeDirectionApplicable;
+        }
+
+        /// <summary>
+        /// target.Vrm.Expression に基づいて再初期化する。
+        /// 
+        /// https://github.com/vrm-c/UniVRM/issues/2802
+        /// 
+        /// ex.
+        /// vrmInstance.Vrm.Expression.AddClip(ExpressionPreset.custom, myCustomExpression);
+        /// vrmInstance.Runtime.Expression.Reload(vrmInstance);
+        /// 
+        /// </summary>
+        public void Reload(Vrm10Instance target)
+        {
+            // 最新の表情定義に基づいて再生成
+            _merger.InitializeOrReload(target.Vrm.Expression, target.transform, _isPrefabInstance, target.Runtime.InitPose);
+            _keys = target.Vrm.Expression.Clips.Select(x => target.Vrm.Expression.CreateKey(x.Clip)).ToList();
+
+            // リロード時の一瞬の表情カクつきを防ぐため、既に設定されていたウェイトを引き継ぐ
+            var oldInputWeights = _inputWeights;
+            _inputWeights = _keys.ToDictionary(x => x, x => 0f);
+            foreach (var key in _keys)
+            {
+                if (oldInputWeights.ContainsKey(key)) _inputWeights[key] = oldInputWeights[key];
+            }
+            _actualWeights = _keys.ToDictionary(x => x, x => 0f);
+            _validator = ExpressionValidatorFactory.Create(target.Vrm.Expression);
         }
 
         public void Dispose()
