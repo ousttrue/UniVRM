@@ -53,7 +53,11 @@ namespace VRM
         KEEP_VERTEX_COLOR,
 
         [LangMsg(Languages.ja, "glTF Animationをエクスポートする。")]
-        [LangMsg(Languages.en, "export glTF animation.")]
+        [LangMsg(Languages.en, "Export glTF animation.")]
         EXPORT_GLTF_ANIMATION,
+
+        [LangMsg(Languages.ja, "テクスチャーアセット設定を変更しない。")]
+        [LangMsg(Languages.en, "Keep texture asset configuration.")]
+        KEEP_TEXTURE_ASSET_CONFIGURATION,
     }
 }

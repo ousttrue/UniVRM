@@ -239,7 +239,7 @@ namespace VRM
             using (var exporter = new VRMExporter(data, gltfExportSettings,
                 animationExporter: settings.KeepAnimation ? new EditorAnimationExporter() : null,
                 materialExporter: materialExporter,
-                textureSerializer: new EditorTextureSerializer()))
+                textureSerializer: settings.KeepTextureAssetConfiguration ? new RuntimeTextureSerializer() : new EditorTextureSerializer()))
             {
                 exporter.Prepare(target);
                 exporter.Export();

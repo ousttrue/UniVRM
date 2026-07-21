@@ -67,6 +67,12 @@ namespace VRM
         [Tooltip("Keep animation")]
         public bool KeepAnimation = false;
 
+        /// <summary>
+        /// Export時にTexture設定を変更しない
+        /// </summary>
+        [Tooltip("Keep texture configuration")]
+        public bool KeepTextureAssetConfiguration = false;
+
         public GltfExportSettings GltfExportSettings => new GltfExportSettings
         {
             UseSparseAccessorForMorphTarget = UseSparseAccessor,
