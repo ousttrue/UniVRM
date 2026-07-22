@@ -124,7 +124,7 @@ namespace UniVRM10
 
                         if (m_materialMap.TryGetValue(binding.MaterialName, out var preview))
                         {
-                            preview.Materials.Add(new(material));
+                            preview.AddMaterialIfUnique(material);
                         }
                         else
                         {
@@ -161,7 +161,7 @@ namespace UniVRM10
                     {
                         if (m_materialMap.TryGetValue(binding.MaterialName, out var preview))
                         {
-                            preview.Materials.Add(new(material));
+                            preview.AddMaterialIfUnique(material);
                         }
                         else
                         {

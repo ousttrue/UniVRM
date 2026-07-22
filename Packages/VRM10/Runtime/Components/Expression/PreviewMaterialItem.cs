@@ -99,11 +99,29 @@ namespace UniVRM10
         /// https://github.com/vrm-c/UniVRM/issues/2769
         /// `v0.131.2`
         /// </summary>
-        public readonly List<MaterialItem> Materials = new();
+        readonly List<MaterialItem> _materials = new();
+
+        public IReadOnlyList<MaterialItem> Materials => _materials;
 
         public PreviewMaterialItem(Material material)
         {
-            Materials.Add(new MaterialItem(material));
+            AddMaterialIfUnique(material);
+        }
+
+        public void AddMaterialIfUnique(Material material)
+        {
+            if (material == null)
+            {
+                throw new ArgumentNullException();
+            }
+            foreach (var item in _materials)
+            {
+                if (item.Material == material)
+                {
+                    return;
+                }
+            }
+            _materials.Add(new MaterialItem(material));
         }
 
         public string[] PropNames
