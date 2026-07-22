@@ -55,7 +55,7 @@ namespace UniVRM10
 
         void InitializeMaterialMap(Dictionary<ExpressionKey, VRM10Expression> clipMap, Transform root, bool isPrefabInstance)
         {
-            var materialNameMap = new Dictionary<string, Material>();
+            var materialNameMap = new Dictionary<string, HashSet<Material>>();
             foreach (var renderer in root.GetComponentsInChildren<Renderer>())
             {
                 // VFXRendererなど、Materialが設定できないRendererが存在する
@@ -79,17 +79,31 @@ namespace UniVRM10
                         // 複製前の名前に揃え、それを記録しておく
                         // なお、Vrm10Runtimeのインスタンスが作られるより先にユーザーによってMaterialが複製されるパターンは想定しない
                         material.name = sharedMaterial.name;
-                        materialNameMap.TryAdd(sharedMaterial.name, material);
+                        if (materialNameMap.TryGetValue(sharedMaterial.name, out var found))
+                        {
+                            found.Add(material);
+                        }
+                        else
+                        {
+                            materialNameMap.Add(sharedMaterial.name, new() { material });
+                        }
                     }
                 }
                 else
                 {
                     // PrefabのInstanceでない（RuntimeImportされている）ならMaterialは複製しない
-                    foreach (var material in renderer.sharedMaterials)
+                    foreach (var sharedMaterial in renderer.sharedMaterials)
                     {
-                        if (material)
+                        if (sharedMaterial)
                         {
-                            materialNameMap.TryAdd(material.name, material);
+                            if (materialNameMap.TryGetValue(sharedMaterial.name, out var found))
+                            {
+                                found.Add(sharedMaterial);
+                            }
+                            else
+                            {
+                                materialNameMap.Add(sharedMaterial.name, new() { sharedMaterial });
+                            }
                         }
                     }
                 }
@@ -99,41 +113,61 @@ namespace UniVRM10
             {
                 foreach (var binding in kv.Value.MaterialColorBindings)
                 {
-                    PreviewMaterialItem item;
-                    if (!m_materialMap.TryGetValue(binding.MaterialName, out item))
+                    if (!materialNameMap.TryGetValue(binding.MaterialName, out var materials))
                     {
-                        if (!materialNameMap.TryGetValue(binding.MaterialName, out Material material))
-                        {
-                            // not found skip
-                            continue;
-                        }
-                        item = new PreviewMaterialItem(material);
-                        m_materialMap.Add(binding.MaterialName, item);
+                        // not found skip
+                        continue;
                     }
-                    // color default value
-                    var propName = GetProperty(binding.BindType);
-                    if (!item.PropMap.ContainsKey(binding.BindType))
+
+                    foreach (var material in materials)
                     {
-                        item.PropMap.Add(binding.BindType, new PropItem
+
+                        if (m_materialMap.TryGetValue(binding.MaterialName, out var preview))
                         {
-                            Name = propName,
-                            DefaultValues = item.Material.GetVector(propName),
-                        });
+                            preview.Materials.Add(new(material));
+                        }
+                        else
+                        {
+                            preview = new PreviewMaterialItem(material);
+                            m_materialMap.Add(binding.MaterialName, preview);
+                        }
+
+                        // color default value
+                        var propName = GetProperty(binding.BindType);
+
+                        foreach (var item in preview.Materials)
+                        {
+                            if (!item.PropMap.ContainsKey(binding.BindType))
+                            {
+                                item.PropMap.Add(binding.BindType, new PropItem
+                                {
+                                    Name = propName,
+                                    DefaultValues = item.Material.GetVector(propName),
+                                });
+                            }
+                        }
                     }
                 }
 
                 foreach (var binding in kv.Value.MaterialUVBindings)
                 {
-                    PreviewMaterialItem item;
-                    if (!m_materialMap.TryGetValue(binding.MaterialName, out item))
+                    if (!materialNameMap.TryGetValue(binding.MaterialName, out var materials))
                     {
-                        if (!materialNameMap.TryGetValue(binding.MaterialName, out Material material))
+                        // not found skip
+                        continue;
+                    }
+
+                    foreach (var material in materials)
+                    {
+                        if (m_materialMap.TryGetValue(binding.MaterialName, out var preview))
                         {
-                            // not found skip
-                            continue;
+                            preview.Materials.Add(new(material));
                         }
-                        item = new PreviewMaterialItem(material);
-                        m_materialMap.Add(binding.MaterialName, item);
+                        else
+                        {
+                            preview = new PreviewMaterialItem(material);
+                            m_materialMap.Add(binding.MaterialName, preview);
+                        }
                     }
                 }
             }
@@ -188,18 +222,21 @@ namespace UniVRM10
             // maetrial uv
             foreach (var binding in clip.MaterialUVBindings)
             {
-                if (m_materialMap.TryGetValue(binding.MaterialName, out PreviewMaterialItem item))
+                if (m_materialMap.TryGetValue(binding.MaterialName, out var preview))
                 {
-                    var delta = binding.ScalingOffset - item.DefaultUVScaleOffset;
+                    foreach (var item in preview.Materials)
+                    {
+                        var delta = binding.ScalingOffset - item.DefaultUVScaleOffset;
 
-                    Vector4 acc;
-                    if (m_materialUVMap.TryGetValue(binding.MaterialName, out acc))
-                    {
-                        m_materialUVMap[binding.MaterialName] = acc + delta * value;
-                    }
-                    else
-                    {
-                        m_materialUVMap[binding.MaterialName] = item.DefaultUVScaleOffset + delta * value;
+                        Vector4 acc;
+                        if (m_materialUVMap.TryGetValue(binding.MaterialName, out acc))
+                        {
+                            m_materialUVMap[binding.MaterialName] = acc + delta * value;
+                        }
+                        else
+                        {
+                            m_materialUVMap[binding.MaterialName] = item.DefaultUVScaleOffset + delta * value;
+                        }
                     }
                 }
             }
@@ -255,11 +292,9 @@ namespace UniVRM10
                 foreach (var kv in m_materialColorMap)
                 {
                     var key = MaterialTarget.Create(kv.Key);
-                    PreviewMaterialItem item;
-                    if (m_materialMap.TryGetValue(key.MaterialName, out item))
+                    if (m_materialMap.TryGetValue(key.MaterialName, out var preview))
                     {
                         // 初期値(コンストラクタで記録)
-                        var initial = item.PropMap[kv.Key.BindType].DefaultValues;
                         if (!m_used.Contains(key))
                         {
                             //
@@ -267,16 +302,24 @@ namespace UniVRM10
                             // (Apply はフレームに一回呼ばれる想定)
                             // 初回は、値を初期値に戻す。
                             //
-                            item.Material.SetColor(key.ValueName, initial);
+                            foreach (var item in preview.Materials)
+                            {
+                                var initial = item.PropMap[kv.Key.BindType].DefaultValues;
+                                item.Material.SetColor(key.ValueName, initial);
+                            }
                             m_used.Add(key);
                         }
 
-                        // 現在値
-                        var current = item.Material.GetVector(key.ValueName);
-                        // 変化量
-                        var value = (kv.Key.TargetValue - initial) * kv.Value;
-                        // 適用
-                        item.Material.SetColor(key.ValueName, current + value);
+                        foreach (var item in preview.Materials)
+                        {
+                            var initial = item.PropMap[kv.Key.BindType].DefaultValues;
+                            // 現在値
+                            var current = item.Material.GetVector(key.ValueName);
+                            // 変化量
+                            var value = (kv.Key.TargetValue - initial) * kv.Value;
+                            // 適用
+                            item.Material.SetColor(key.ValueName, current + value);
+                        }
                     }
                     else
                     {
@@ -289,14 +332,16 @@ namespace UniVRM10
             {
                 foreach (var kv in m_materialUVMap)
                 {
-                    PreviewMaterialItem item;
-                    if (m_materialMap.TryGetValue(kv.Key, out item))
+                    if (m_materialMap.TryGetValue(kv.Key, out var preview))
                     {
-                        //
-                        // Standard and MToon use _MainTex_ST as uv0 scale/offset
-                        //
-                        item.Material.mainTextureScale = new Vector2(kv.Value.x, kv.Value.y);
-                        item.Material.mainTextureOffset = new Vector2(kv.Value.z, kv.Value.w);
+                        foreach (var item in preview.Materials)
+                        {
+                            //
+                            // Standard and MToon use _MainTex_ST as uv0 scale/offset
+                            //
+                            item.Material.mainTextureScale = new Vector2(kv.Value.x, kv.Value.y);
+                            item.Material.mainTextureOffset = new Vector2(kv.Value.z, kv.Value.w);
+                        }
                     }
                 }
                 m_materialUVMap.Clear();

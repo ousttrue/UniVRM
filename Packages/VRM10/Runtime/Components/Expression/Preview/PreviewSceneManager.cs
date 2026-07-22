@@ -78,9 +78,12 @@ namespace UniVRM10
 
         public void Clean()
         {
-            foreach (var kv in m_materialMap)
+            foreach (var (k, preview) in m_materialMap)
             {
-                UnityEngine.Object.DestroyImmediate(kv.Value.Material);
+                foreach (var item in preview.Materials)
+                {
+                    UnityEngine.Object.DestroyImmediate(item.Material);
+                }
             }
         }
 
@@ -287,22 +290,23 @@ namespace UniVRM10
                 {
                     foreach (var x in bake.MaterialColorBindings)
                     {
-                        PreviewMaterialItem item;
-                        if (m_materialMap.TryGetValue(x.MaterialName, out item))
+                        if (m_materialMap.TryGetValue(x.MaterialName, out var preview))
                         {
-                            PropItem prop;
-                            if (item.PropMap.TryGetValue(x.BindType, out prop))
+                            foreach (var item in preview.Materials)
                             {
-                                // var valueName = x.ValueName;
-                                // if (valueName.EndsWith("_ST_S")
-                                // || valueName.EndsWith("_ST_T"))
-                                // {
-                                //     valueName = valueName.Substring(0, valueName.Length - 2);
-                                // }
+                                if (item.PropMap.TryGetValue(x.BindType, out var prop))
+                                {
+                                    // var valueName = x.ValueName;
+                                    // if (valueName.EndsWith("_ST_S")
+                                    // || valueName.EndsWith("_ST_T"))
+                                    // {
+                                    //     valueName = valueName.Substring(0, valueName.Length - 2);
+                                    // }
 
-                                var value = item.Material.GetVector(prop.Name);
-                                value += ((x.TargetValue - prop.DefaultValues) * weight);
-                                item.Material.SetColor(prop.Name, value);
+                                    var value = item.Material.GetVector(prop.Name);
+                                    value += (x.TargetValue - prop.DefaultValues) * weight;
+                                    item.Material.SetColor(prop.Name, value);
+                                }
                             }
                         }
                     }

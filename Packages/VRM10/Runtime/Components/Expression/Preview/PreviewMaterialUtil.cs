@@ -39,8 +39,8 @@ namespace UniVRM10
                                 hasError = true;
                                 continue;
                             }
-                            
-                            item.PropMap.Add(bindType, new PropItem
+
+                            item.Materials[0].PropMap.Add(bindType, new PropItem
                             {
                                 Name = name,
                                 PropertyType = propertyType,
