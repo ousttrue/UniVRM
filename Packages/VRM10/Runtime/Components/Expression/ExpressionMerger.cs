@@ -32,6 +32,16 @@ namespace UniVRM10
             bool isPrefabInstance,
             IReadOnlyDictionary<Transform, TransformState> initPose)
         {
+            InitializeOrReload(expressions, root, isPrefabInstance, initPose);
+        }
+
+        internal void InitializeOrReload(VRM10ObjectExpression expressions,
+            Transform root,
+            bool isPrefabInstance,
+            IReadOnlyDictionary<Transform, TransformState> initPose)
+        {
+            Dispose();
+
             m_clipMap = expressions.Clips.ToDictionary(
                 x => expressions.CreateKey(x.Clip),
                 x => x.Clip,
@@ -79,9 +89,12 @@ namespace UniVRM10
             m_boneTransformBindingMerger.AccumulateValue(key, value);
         }
 
+        /// <summary>
+        /// 未初期化呼び出し及び再呼び出しで正常に動くように注意 !
+        /// </summary>
         public void Dispose()
         {
-            m_materialValueBindingMerger.Dispose();
+            m_materialValueBindingMerger?.Dispose();
         }
     }
 }
