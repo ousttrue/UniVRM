@@ -41,17 +41,15 @@ namespace UniVRM10
 
     /// <summary>
     /// Material 一つ分のプロパティを蓄えている
-    ///
-    /// * PreviewSceneManager で使う
-    /// * MaterialValueBindingMerger で使う
-    ///
     /// </summary>
     [Serializable]
-    public sealed class PreviewMaterialItem
+    public class MaterialItem
     {
         public readonly Material Material;
+        public Vector4 DefaultUVScaleOffset;
+        public Dictionary<UniGLTF.Extensions.VRMC_vrm.MaterialColorType, PropItem> PropMap = new();
 
-        public PreviewMaterialItem(Material material)
+        public MaterialItem(Material material)
         {
             Material = material;
 
@@ -61,9 +59,70 @@ namespace UniVRM10
             DefaultUVScaleOffset = new(s.x, s.y, o.x, o.y);
         }
 
-        public Dictionary<UniGLTF.Extensions.VRMC_vrm.MaterialColorType, PropItem> PropMap = new Dictionary<UniGLTF.Extensions.VRMC_vrm.MaterialColorType, PropItem>();
+        public void Clear()
+        {
+            // clear Color
+            foreach (var _kv in PropMap)
+            {
+                Material.SetColor(_kv.Value.Name, _kv.Value.DefaultValues);
+            }
 
-        public Vector4 DefaultUVScaleOffset = new Vector4(1, 1, 0, 0);
+            // clear UV
+            Material.mainTextureScale = new(DefaultUVScaleOffset.x, DefaultUVScaleOffset.y);
+            Material.mainTextureOffset = new(DefaultUVScaleOffset.z, DefaultUVScaleOffset.w);
+        }
+
+        public void AddScaleOffset(Vector4 scaleOffset, float weight)
+        {
+            var s = Material.mainTextureScale;
+            var o = Material.mainTextureOffset;
+            var value = new Vector4(s.x, s.y, o.x, o.y);
+            value += (scaleOffset - DefaultUVScaleOffset) * weight;
+            Material.mainTextureOffset = new(value.z, value.w);
+            Material.mainTextureScale = new(value.x, value.y);
+        }
+    }
+
+    /// <summary>
+    /// 複数のMaterial のプロパティを保持する
+    ///
+    /// * PreviewSceneManager で使う
+    /// * MaterialValueBindingMerger で使う
+    ///
+    /// </summary>
+    [Serializable]
+    public sealed class PreviewMaterialItem
+    {
+        /// <summary>
+        /// https://github.com/vrm-c/UniVRM/pull/2685 により、ひとつの sharedMaterial から複数のコピーが派生しうる。
+        /// すべてのコピーを保持できるように修正した。
+        /// https://github.com/vrm-c/UniVRM/issues/2769
+        /// `v0.131.2`
+        /// </summary>
+        readonly List<MaterialItem> _materials = new();
+
+        public IReadOnlyList<MaterialItem> Materials => _materials;
+
+        public PreviewMaterialItem(Material material)
+        {
+            AddMaterialIfUnique(material);
+        }
+
+        public void AddMaterialIfUnique(Material material)
+        {
+            if (material == null)
+            {
+                throw new ArgumentNullException();
+            }
+            foreach (var item in _materials)
+            {
+                if (item.Material == material)
+                {
+                    return;
+                }
+            }
+            _materials.Add(new MaterialItem(material));
+        }
 
         public string[] PropNames
         {
@@ -118,15 +177,10 @@ namespace UniVRM10
         /// </summary>
         public void Clear()
         {
-            // clear Color
-            foreach (var _kv in PropMap)
+            foreach (var item in Materials)
             {
-                Material.SetColor(_kv.Value.Name, _kv.Value.DefaultValues);
+                item.Clear();
             }
-
-            // clear UV
-            Material.mainTextureScale = new(DefaultUVScaleOffset.x, DefaultUVScaleOffset.y);
-            Material.mainTextureOffset = new(DefaultUVScaleOffset.z, DefaultUVScaleOffset.w);
         }
 
         /// <summary>
@@ -136,12 +190,10 @@ namespace UniVRM10
         /// <param name="weight"></param>
         public void AddScaleOffset(Vector4 scaleOffset, float weight)
         {
-            var s = Material.mainTextureScale;
-            var o = Material.mainTextureOffset;
-            var value = new Vector4(s.x, s.y, o.x, o.y);
-            value += (scaleOffset - DefaultUVScaleOffset) * weight;
-            Material.mainTextureOffset = new(value.z, value.w);
-            Material.mainTextureScale = new(value.x, value.y);
+            foreach (var item in Materials)
+            {
+                item.AddScaleOffset(scaleOffset, weight);
+            }
         }
     }
 }
