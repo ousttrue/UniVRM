@@ -81,7 +81,21 @@ namespace UniGLTF
             if (!EditorTextureUtility.TryGetAsEditorTexture2DAsset(externalTexture, out var texture2D, out var importer)) return;
 
             Configure(texDesc, importer);
-            importer.SaveAndReimport();
+
+            // https://github.com/vrm-c/UniVRM/issues/2813 (4)
+            // https://github.com/vrm-c/UniVRM/issues/2783
+            //
+            // UnityException: Calls to "AssetDatabase.ImportAsset" are restricted during asset importing.
+            // Please make sure this function is not called from ScriptedImporters or PostProcessors,
+            // as it is a source of non-determinism.
+            var assetPath = importer.assetPath;
+            EditorApplication.delayCall += () =>
+            {
+                if (AssetImporter.GetAtPath(assetPath) is TextureImporter i)
+                {
+                    i.SaveAndReimport();
+                }
+            };
         }
     }
 }
