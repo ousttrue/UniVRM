@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using NUnit.Framework;
 using UniGLTF;
+using Unity.Collections;
 using Unity.PerformanceTesting;
 using UnityEngine;
 using UnityEngine.Profiling;
@@ -12,7 +13,7 @@ public class GltfParsePerformanceTests
     static string AliciaPath => Path.GetFullPath(
         Path.Combine(Application.dataPath, "../Tests/Models/Alicia_vrm-0.51/AliciaSolid_vrm-0.51.vrm"));
 
-    static Vrm10Instance CreateVrm10Instance(byte[] bytes)
+    static Vrm10Instance CreateVrm10Instance(NativeArray<byte> bytes)
     {
         return Vrm10.LoadBytesAsync(
             bytes,
@@ -25,11 +26,11 @@ public class GltfParsePerformanceTests
     [Test, Performance]
     public void ParseGlb()
     {
-        var bytes = File.ReadAllBytes(AliciaPath);
+        using var bytes = NativeFile.ReadAllBytes(AliciaPath);
 
         Measure.Method(() =>
             {
-                using var data = new GlbLowLevelParser(AliciaPath, bytes).Parse();
+                using var data = GlbLowLevelParser.Parse(AliciaPath, bytes);
             })
             .WarmupCount(3)
             .MeasurementCount(20)
@@ -40,7 +41,7 @@ public class GltfParsePerformanceTests
     [Test, Performance]
     public void LoadVrm10Instance()
     {
-        var bytes = File.ReadAllBytes(AliciaPath);
+        using var bytes = NativeFile.ReadAllBytes(AliciaPath);
 
         Measure.Method(() =>
             {
@@ -56,13 +57,13 @@ public class GltfParsePerformanceTests
     [Test, Performance]
     public void AllocatedBytes()
     {
-        var bytes = File.ReadAllBytes(AliciaPath);
+        using var bytes = NativeFile.ReadAllBytes(AliciaPath);
 
         var parseBytes = new SampleGroup("Parse.GC.AllocatedBytes", SampleUnit.Kilobyte);
         var loadBytes = new SampleGroup("Load.GC.AllocatedBytes", SampleUnit.Kilobyte);
 
         // warmup
-        using (new GlbLowLevelParser(AliciaPath, bytes).Parse()) { }
+        using (GlbLowLevelParser.Parse(AliciaPath, bytes)) { }
         UnityEngine.Object.DestroyImmediate(CreateVrm10Instance(bytes).gameObject);
 
         for (var i = 0; i < 5; ++i)
@@ -71,7 +72,7 @@ public class GltfParsePerformanceTests
             GC.WaitForPendingFinalizers();
 
             var before = GC.GetAllocatedBytesForCurrentThread();
-            using (new GlbLowLevelParser(AliciaPath, bytes).Parse()) { }
+            using (GlbLowLevelParser.Parse(AliciaPath, bytes)) { }
             var after = GC.GetAllocatedBytesForCurrentThread();
             Measure.Custom(parseBytes, (after - before) / 1024.0);
 
@@ -86,13 +87,13 @@ public class GltfParsePerformanceTests
     [Test, Performance]
     public void NativeAllocatedBytes()
     {
-        var bytes = File.ReadAllBytes(AliciaPath);
+        using var bytes = NativeFile.ReadAllBytes(AliciaPath);
 
         var parseNative = new SampleGroup("Parse.Native.AllocatedBytes", SampleUnit.Kilobyte);
         var loadNative = new SampleGroup("Load.Native.AllocatedBytes", SampleUnit.Kilobyte);
 
         // warmup
-        using (new GlbLowLevelParser(AliciaPath, bytes).Parse()) { }
+        using (GlbLowLevelParser.Parse(AliciaPath, bytes)) { }
         UnityEngine.Object.DestroyImmediate(CreateVrm10Instance(bytes).gameObject);
 
         for (var i = 0; i < 5; ++i)
@@ -101,7 +102,7 @@ public class GltfParsePerformanceTests
             GC.WaitForPendingFinalizers();
 
             var before = Profiler.GetTotalAllocatedMemoryLong();
-            using (new GlbLowLevelParser(AliciaPath, bytes).Parse())
+            using (GlbLowLevelParser.Parse(AliciaPath, bytes))
             {
                 var after = Profiler.GetTotalAllocatedMemoryLong();
                 Measure.Custom(parseNative, (after - before) / 1024.0);

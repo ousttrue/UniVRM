@@ -5,6 +5,7 @@
         "UniGLTF",
         "UniGLTF.Utils",
         "VRM10",
+        "Unity.Collections",
         "Unity.PerformanceTesting"
     ],
     "includePlatforms": [

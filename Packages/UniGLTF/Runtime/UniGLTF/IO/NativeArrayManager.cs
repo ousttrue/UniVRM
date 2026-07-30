@@ -29,11 +29,11 @@ namespace UniGLTF
     /// <summary>
     /// 特定のコンテキスト(GltfDataなど)に関連する、NativeArrayの作成を代行し、
     /// まとめてDisposeできるようにする。
-    /// 
+    ///
     /// 例えば indexバッファー NativeArray<uint> の元が NativeArray<ushort> である場合に
     /// 新規に NativeArray を作成し Dispose 対象として管理する必要がある。
     /// また、Sparse や base64 encoding など単純なバイト列のスライスで済まない場合も同様である。
-    /// 
+    ///
     /// </summary>
     public class NativeArrayManager : INativeArrayManager, IDisposable
     {
@@ -88,6 +88,12 @@ namespace UniGLTF
             return array;
         }
 
+        /// <summary>
+        /// MemoryをゼロコピーでNativeArrayに変換する。元のデータのポインタはpinされ、Dispose時にunpinされる
+        /// </summary>
+        /// <param name="data"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public NativeArray<T> CreateNativeArray<T>(ReadOnlyMemory<T> data) where T : struct
         {
             unsafe
@@ -105,7 +111,7 @@ namespace UniGLTF
 
         /// <summary>
         /// サイズの違う型にコピーする。
-        /// 
+        ///
         /// 例
         /// NativeArray<ushort> => NativeArray<uint>
         /// </summary>

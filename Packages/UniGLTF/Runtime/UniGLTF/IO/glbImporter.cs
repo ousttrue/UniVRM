@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Unity.Collections;
 
 
 namespace UniGLTF
@@ -59,11 +60,9 @@ namespace UniGLTF
             throw new FormatException("unknown chunk type: " + src);
         }
 
-        [Obsolete("Use ParseGlbChunks(bytes)")]
-        public static List<GlbChunk> ParseGlbChanks(Byte[] bytes)
-        {
-            return ParseGlbChunks(bytes);
-        }
+        public static List<GlbChunk> ParseGlbChanks(Byte[] bytes) => ParseGlbChunks(bytes);
+
+        public static List<GlbChunk> ParseGlbChanks(NativeArray<byte> bytes) => ParseGlbChunks(bytes.AsMemory());
 
         public static List<GlbChunk> ParseGlbChunks(ReadOnlyMemory<byte> bytes)
         {
