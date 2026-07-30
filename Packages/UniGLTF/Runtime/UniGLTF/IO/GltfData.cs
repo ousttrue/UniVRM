@@ -120,12 +120,6 @@ namespace UniGLTF
             }
         }
 
-        internal GltfData(string targetPath, Utf8String jsonString, glTF gltf, IReadOnlyList<GlbChunk> chunks, IStorage storage, MigrationFlags migrationFlags)
-        {
-            TargetPath = targetPath;
-            _utf8JsonString = jsonString;
-        }
-
         public void Dispose()
         {
             NativeArrayManager.Dispose();
