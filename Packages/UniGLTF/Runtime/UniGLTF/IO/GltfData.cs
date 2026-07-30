@@ -1,12 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
-<<<<<<< HEAD:Packages/UniGLTF/Runtime/UniGLTF/IO/GltfData.cs
 using UniJSON;
-=======
-using System.Text;
->>>>>>> bce3a9b5c (stringを返さず直接byte配列を渡すように変更):Assets/UniGLTF/Runtime/UniGLTF/IO/GltfData.cs
 using Unity.Collections;
 
 namespace UniGLTF
@@ -37,11 +32,7 @@ namespace UniGLTF
         /// JSON chunk ToString
         /// > This chunk MUST be the very first chunk of Binary glTF asset
         /// </summary>
-<<<<<<< HEAD:Packages/UniGLTF/Runtime/UniGLTF/IO/GltfData.cs
         public string Json => _jsonString ??= _utf8JsonString.ToString();
-=======
-        public string Json => _json ?? Encoding.UTF8.GetString(_jsonBytes.Span);
->>>>>>> bce3a9b5c (stringを返さず直接byte配列を渡すように変更):Assets/UniGLTF/Runtime/UniGLTF/IO/GltfData.cs
 
         /// <summary>
         /// GLTF parsed from JSON chunk
@@ -81,7 +72,6 @@ namespace UniGLTF
         /// <returns></returns>
         Dictionary<string, NativeArray<byte>> _UriCache = new Dictionary<string, NativeArray<byte>>();
 
-<<<<<<< HEAD:Packages/UniGLTF/Runtime/UniGLTF/IO/GltfData.cs
         /// <summary>
         /// json string in utf8
         /// </summary>
@@ -110,20 +100,11 @@ namespace UniGLTF
                 }
             }
         }
-        
-        internal GltfData(string targetPath, Utf8String jsonString, glTF gltf, IReadOnlyList<GlbChunk> chunks, IStorage storage, MigrationFlags migrationFlags)
-        {
-            TargetPath = targetPath;
-            _utf8JsonString = jsonString;
-=======
-        private string _json;
-        readonly ReadOnlyMemory<byte> _jsonBytes;
 
         public GltfData(string targetPath, ReadOnlyMemory<byte> jsonBytes, glTF gltf, IReadOnlyList<GlbChunk> chunks, IStorage storage, MigrationFlags migrationFlags)
         {
             TargetPath = targetPath;
-            _jsonBytes = jsonBytes;
->>>>>>> bce3a9b5c (stringを返さず直接byte配列を渡すように変更):Assets/UniGLTF/Runtime/UniGLTF/IO/GltfData.cs
+            _utf8JsonString = new Utf8String(jsonBytes);
             GLTF = gltf;
             Chunks = chunks;
             _storage = storage;
@@ -137,6 +118,12 @@ namespace UniGLTF
                     Bin = NativeArrayManager.CreateNativeArray(Chunks[1].Bytes);
                 }
             }
+        }
+
+        internal GltfData(string targetPath, Utf8String jsonString, glTF gltf, IReadOnlyList<GlbChunk> chunks, IStorage storage, MigrationFlags migrationFlags)
+        {
+            TargetPath = targetPath;
+            _utf8JsonString = jsonString;
         }
 
         public void Dispose()
