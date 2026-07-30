@@ -66,14 +66,16 @@ namespace UniJSON
         /// <returns></returns>
         static JsonNode ParsePrimitive(JsonNode tree, Utf8String segment, ValueNodeType valueType)
         {
+            var span = segment.Bytes.Span;
             int i = 1;
-            for (; i < segment.ByteLength; ++i)
+            for (; i < span.Length; ++i)
             {
-                if (Char.IsWhiteSpace((char)segment[i])
-                    || segment[i] == '}'
-                    || segment[i] == ']'
-                    || segment[i] == ','
-                    || segment[i] == ':'
+                var b = span[i];
+                if (Char.IsWhiteSpace((char)b)
+                    || b == '}'
+                    || b == ']'
+                    || b == ','
+                    || b == ':'
                     )
                 {
                     break;

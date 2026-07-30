@@ -139,38 +139,12 @@ namespace UniJSON
 
         public bool StartsWith(Utf8String rhs)
         {
-            if (rhs.ByteLength > ByteLength)
-            {
-                return false;
-            }
-
-            for (int i = 0; i < rhs.ByteLength; ++i)
-            {
-                if (this[i] != rhs[i])
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            return Bytes.Span.StartsWith(rhs.Bytes.Span);
         }
 
         public bool EndsWith(Utf8String rhs)
         {
-            if (rhs.ByteLength > ByteLength)
-            {
-                return false;
-            }
-
-            for (int i = 1; i <= rhs.ByteLength; ++i)
-            {
-                if (this[ByteLength - i] != rhs[rhs.ByteLength - i])
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            return Bytes.Span.EndsWith(rhs.Bytes.Span);
         }
 
         public int IndexOf(Byte code)
@@ -219,10 +193,11 @@ namespace UniJSON
 
         public Utf8String TrimStart()
         {
+            var span = Bytes.Span;
             var i = 0;
-            for (; i < ByteLength; ++i)
+            for (; i < span.Length; ++i)
             {
-                if (!IsSpace(this[i]))
+                if (!IsSpace(span[i]))
                 {
                     break;
                 }
@@ -232,10 +207,11 @@ namespace UniJSON
 
         public Utf8String TrimEnd()
         {
-            var i = ByteLength-1;
+            var span = Bytes.Span;
+            var i = span.Length - 1;
             for (; i >= 0; --i)
             {
-                if (!IsSpace(this[i]))
+                if (!IsSpace(span[i]))
                 {
                     break;
                 }
@@ -265,20 +241,7 @@ namespace UniJSON
 
         public bool Equals(Utf8String other)
         {
-            if (ByteLength != other.ByteLength)
-            {
-                return false;
-            }
-
-            for (int i = 0; i < ByteLength; ++i)
-            {
-                if (this[i] != other[i])
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            return Bytes.Span.SequenceEqual(other.Bytes.Span);
         }
 
         public override int GetHashCode()
@@ -296,9 +259,10 @@ namespace UniJSON
             get
             {
                 //bool isInt = false;
-                for (int i = 0; i < ByteLength; ++i)
+                var span = Bytes.Span;
+                for (int i = 0; i < span.Length; ++i)
                 {
-                    var c = this[i];
+                    var c = span[i];
                     if (c == '0'
                         || c == '1'
                         || c == '2'
