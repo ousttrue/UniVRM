@@ -1,6 +1,6 @@
 using System;
-using System.IO;
 using NUnit.Framework;
+using System.IO;
 using UniGLTF;
 using Unity.Collections;
 using Unity.PerformanceTesting;
@@ -52,36 +52,6 @@ public class GltfParsePerformanceTests
             .MeasurementCount(10)
             .GC()
             .Run();
-    }
-
-    [Test, Performance]
-    public void AllocatedBytes()
-    {
-        using var bytes = NativeFile.ReadAllBytes(AliciaPath);
-
-        var parseBytes = new SampleGroup("Parse.GC.AllocatedBytes", SampleUnit.Kilobyte);
-        var loadBytes = new SampleGroup("Load.GC.AllocatedBytes", SampleUnit.Kilobyte);
-
-        // warmup
-        using (GlbLowLevelParser.Parse(AliciaPath, bytes)) { }
-        UnityEngine.Object.DestroyImmediate(CreateVrm10Instance(bytes).gameObject);
-
-        for (var i = 0; i < 5; ++i)
-        {
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-
-            var before = GC.GetAllocatedBytesForCurrentThread();
-            using (GlbLowLevelParser.Parse(AliciaPath, bytes)) { }
-            var after = GC.GetAllocatedBytesForCurrentThread();
-            Measure.Custom(parseBytes, (after - before) / 1024.0);
-
-            before = GC.GetAllocatedBytesForCurrentThread();
-            var instance = CreateVrm10Instance(bytes);
-            after = GC.GetAllocatedBytesForCurrentThread();
-            UnityEngine.Object.DestroyImmediate(instance.gameObject);
-            Measure.Custom(loadBytes, (after - before) / 1024.0);
-        }
     }
 
     [Test, Performance]
