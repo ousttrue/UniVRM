@@ -8,7 +8,7 @@ namespace UniGLTF
     public static class glbImporter
     {
         public const string GLB_MAGIC = "glTF";
-        public const uint GLB_VERSION = 2;
+        public const float GLB_VERSION = 2.0f;
 
         public static readonly ReadOnlyMemory<byte> GLB_MAGIC_BYTES = Encoding.ASCII.GetBytes(GLB_MAGIC);
         public static readonly ReadOnlyMemory<byte> GLB_JSON_BYTES = BitConverter.GetBytes((uint)GlbChunkType.JSON);
