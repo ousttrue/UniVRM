@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Text.RegularExpressions;
 using UniJSON;
+using Unity.Collections;
 
 namespace UniGLTF
 {
@@ -17,7 +17,7 @@ namespace UniGLTF
         private static readonly Regex _removeUniqueFixResourceSuffix = new Regex($@"^(.+){UniqueFixResourceSuffix}(\d+)$");
 
         private readonly string _path;
-        private readonly byte[] _binary;
+        private readonly ReadOnlyMemory<byte> _binary;
 
         public GlbLowLevelParser(string path, byte[] specifiedBinary)
         {
@@ -25,7 +25,19 @@ namespace UniGLTF
             _binary = specifiedBinary;
         }
 
+        public GlbLowLevelParser(string path, NativeArray<byte> specifiedBinary)
+        {
+            _path = path;
+            _binary = specifiedBinary.AsMemory();
+        }
+
         public GltfData Parse() => Parse(_path, _binary);
+
+        public static GltfData Parse(string path, NativeArray<byte> binary) =>
+            Parse(path, binary.AsMemory());
+
+        public static GltfData Parse(string path, byte[] binary) =>
+            Parse(path, binary.AsMemory());
 
         public static GltfData Parse(string path, ReadOnlyMemory<byte> binary)
         {
@@ -87,6 +99,7 @@ namespace UniGLTF
         {
             var jsonNode = json.ParseAsJson();
             var GLTF = GltfDeserializer.Deserialize(jsonNode);
+            if (!GLTF.asset.version.StartsWith("2"))
             {
                 throw new UniGLTFException("unknown gltf version {0}", GLTF.asset.version);
             }
