@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using UniJSON;
+using Unity.Collections;
 
 namespace UniGLTF
 {
@@ -16,7 +17,7 @@ namespace UniGLTF
         private static readonly Regex _removeUniqueFixResourceSuffix = new Regex($@"^(.+){UniqueFixResourceSuffix}(\d+)$");
 
         private readonly string _path;
-        private readonly byte[] _binary;
+        private readonly ReadOnlyMemory<byte> _binary;
 
         public GlbLowLevelParser(string path, byte[] specifiedBinary)
         {
@@ -24,15 +25,29 @@ namespace UniGLTF
             _binary = specifiedBinary;
         }
 
-        public GltfData Parse()
+        public GlbLowLevelParser(string path, NativeArray<byte> specifiedBinary)
+        {
+            _path = path;
+            _binary = specifiedBinary.AsMemory();
+        }
+
+        public GltfData Parse() => Parse(_path, _binary);
+
+        public static GltfData Parse(string path, NativeArray<byte> binary) =>
+            Parse(path, binary.AsMemory());
+
+        public static GltfData Parse(string path, byte[] binary) =>
+            Parse(path, binary.AsMemory());
+
+        public static GltfData Parse(string path, ReadOnlyMemory<byte> binary)
         {
             try
             {
-                var chunks = ParseGlbChunks(_binary);
+                var chunks = ParseGlbChunks(binary);
                 var jsonBytes = chunks[0].Bytes;
                 return ParseGltf(
-                    _path,
-                    new Utf8String(new ArraySegment<byte>(jsonBytes.Array, jsonBytes.Offset, jsonBytes.Count)),
+                    path,
+                    jsonBytes,
                     chunks,
                     default,
                     new MigrationFlags()
@@ -48,7 +63,7 @@ namespace UniGLTF
             }
         }
 
-        public static List<GlbChunk> ParseGlbChunks(byte[] data)
+        public static List<GlbChunk> ParseGlbChunks(ReadOnlyMemory<byte> data)
         {
             var chunks = glbImporter.ParseGlbChunks(data);
 
@@ -77,15 +92,20 @@ namespace UniGLTF
 
         internal static GltfData ParseGltf(string path, Utf8String json, IReadOnlyList<GlbChunk> chunks, IStorage storage, MigrationFlags migrationFlags)
         {
-            var parsedJson = json.ParseAsJson();
-            var GLTF = GltfDeserializer.Deserialize(parsedJson);
-            if (GLTF.asset.version != "2.0")
+            return ParseGltf(path, json.Bytes, chunks, storage, migrationFlags);
+        }
+
+        public static GltfData ParseGltf(string path, ReadOnlyMemory<byte> json, IReadOnlyList<GlbChunk> chunks, IStorage storage, MigrationFlags migrationFlags)
+        {
+            var jsonNode = json.ParseAsJson();
+            var GLTF = GltfDeserializer.Deserialize(jsonNode);
+            if (!GLTF.asset.version.StartsWith("2"))
             {
                 throw new UniGLTFException("unknown gltf version {0}", GLTF.asset.version);
             }
 
             // Version Compatibility
-            RestoreOlderVersionValues(parsedJson, GLTF);
+            RestoreOlderVersionValues(jsonNode, GLTF);
 
             FixMeshNameUnique(GLTF);
             FixBlendShapeNameUnique(GLTF);
@@ -303,7 +323,7 @@ namespace UniGLTF
             }
         }
 
-        private static void RestoreOlderVersionValues(JsonNode parsed, glTF GLTF)
+        private static void RestoreOlderVersionValues(JsonNode jsonNode, glTF GLTF)
         {
             for (int i = 0; i < GLTF.images.Count; ++i)
             {
@@ -311,7 +331,7 @@ namespace UniGLTF
                 {
                     try
                     {
-                        var extraName = parsed["images"][i]["extra"]["name"].Value.GetString();
+                        var extraName = jsonNode["images"][i]["extra"]["name"].Value.GetString();
                         if (!string.IsNullOrEmpty(extraName))
                         {
                             GLTF.images[i].name = extraName;

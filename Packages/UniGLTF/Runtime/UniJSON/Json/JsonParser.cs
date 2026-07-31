@@ -66,14 +66,16 @@ namespace UniJSON
         /// <returns></returns>
         static JsonNode ParsePrimitive(JsonNode tree, Utf8String segment, ValueNodeType valueType)
         {
+            var span = segment.Bytes.Span;
             int i = 1;
-            for (; i < segment.ByteLength; ++i)
+            for (; i < span.Length; ++i)
             {
-                if (Char.IsWhiteSpace((char)segment[i])
-                    || segment[i] == '}'
-                    || segment[i] == ']'
-                    || segment[i] == ','
-                    || segment[i] == ':'
+                var b = span[i];
+                if (Char.IsWhiteSpace((char)b)
+                    || b == '}'
+                    || b == ']'
+                    || b == ','
+                    || b == ':'
                     )
                 {
                     break;
@@ -153,7 +155,7 @@ namespace UniJSON
             }
 
             // fix array range
-            var count = current.Bytes.Offset + 1 - segment.Bytes.Offset;
+            var count = segment.ByteLength - current.ByteLength + 1;
             array.SetValueBytesCount(count);
             
             return array;
@@ -242,7 +244,7 @@ namespace UniJSON
             }
 
             // fix obj range
-            var count = current.Bytes.Offset + 1 - segment.Bytes.Offset;
+            var count = segment.ByteLength - current.ByteLength + 1;
             obj.SetValueBytesCount(count);
 
             return obj;

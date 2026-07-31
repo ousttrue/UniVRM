@@ -1,30 +1,29 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+using System;
 
 
 namespace UniJSON
 {
-    public struct Utf8Iterator : IEnumerator<Byte>
+    public ref struct Utf8Iterator
     {
-        Byte[] m_bytes;
-        int m_offset;
+        ReadOnlySpan<byte> m_span;
         int m_start;
         int m_position;
-        int m_end;
 
-        public Utf8Iterator(ArraySegment<Byte> range, int start = 0)
+        public Utf8Iterator(ReadOnlyMemory<Byte> memory, int start = 0)
+            : this(memory.Span, start)
         {
-            m_bytes = range.Array;
-            m_offset = range.Offset;
-            m_start = m_offset + start;
+        }
+
+        public Utf8Iterator(ReadOnlySpan<Byte> span, int start = 0)
+        {
+            m_span = span;
+            m_start = start;
             m_position = -1;
-            m_end = range.Offset + range.Count;
         }
 
         public int BytePosition
         {
-            get { return m_position - m_offset; }
+            get { return m_position; }
         }
 
         public int CurrentByteLength
@@ -57,27 +56,22 @@ namespace UniJSON
 
         public byte Current
         {
-            get { return m_bytes[m_position]; }
-        }
-
-        object IEnumerator.Current
-        {
-            get { return Current; }
+            get { return m_span[m_position]; }
         }
 
         public byte Second
         {
-            get { return m_bytes[m_position + 1]; }
+            get { return m_span[m_position + 1]; }
         }
 
         public byte Third
         {
-            get { return m_bytes[m_position + 2]; }
+            get { return m_span[m_position + 2]; }
         }
 
         public byte Fourth
         {
-            get { return m_bytes[m_position + 3]; }
+            get { return m_span[m_position + 3]; }
         }
 
         public const uint Mask1 = 0x01;
@@ -174,10 +168,6 @@ namespace UniJSON
             }
         }
 
-        public void Dispose()
-        {
-        }
-
         public bool MoveNext()
         {
             if (m_position == -1)
@@ -188,7 +178,7 @@ namespace UniJSON
             {
                 m_position += CurrentByteLength;
             }
-            return m_position < m_end;
+            return m_position < m_span.Length;
         }
 
         public void Reset()

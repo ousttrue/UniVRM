@@ -21,5 +21,9 @@ namespace UniJSON
         {
             return JsonParser.Parse(new Utf8String(bytes));
         }
+        public static JsonNode ParseAsJson(this ReadOnlyMemory<byte> bytes)
+        {
+            return JsonParser.Parse(new Utf8String(bytes));
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Unity.Collections;
 using UnityEngine;
 
 namespace UniGLTF
@@ -11,9 +12,12 @@ namespace UniGLTF
     ///   Texture2D.LoadImage
     /// extact:
     ///   File.WriteAllBytes
+    ///
+    /// NOTE: binary は GltfData が保持する NativeArray をそのまま参照する。
+    ///       コピーを避けるため、呼び出し側で Dispose してはならない。
     /// </summary>
     /// <returns></returns>
-    public delegate Task<(byte[] binary, string mimeType)?> GetTextureBytesAsync();
+    public delegate Task<(NativeArray<byte> binary, string mimeType)?> GetTextureBytesAsync();
 
     /// <summary>
     /// 入力 glTF ファイルを Import した結果生成される、UnityEngine.Texture のアセット 1 つを確定させる Import 情報。

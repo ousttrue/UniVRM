@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
 using UniJSON;
 using Unity.Collections;
@@ -101,11 +100,11 @@ namespace UniGLTF
                 }
             }
         }
-        
-        internal GltfData(string targetPath, Utf8String jsonString, glTF gltf, IReadOnlyList<GlbChunk> chunks, IStorage storage, MigrationFlags migrationFlags)
+
+        public GltfData(string targetPath, ReadOnlyMemory<byte> jsonBytes, glTF gltf, IReadOnlyList<GlbChunk> chunks, IStorage storage, MigrationFlags migrationFlags)
         {
             TargetPath = targetPath;
-            _utf8JsonString = jsonString;
+            _utf8JsonString = new Utf8String(jsonBytes);
             GLTF = gltf;
             Chunks = chunks;
             _storage = storage;
@@ -136,7 +135,7 @@ namespace UniGLTF
         {
             return new GltfData(
                 string.Empty,
-                string.Empty,
+                Array.Empty<byte>(),
                 gltf,
                 new List<GlbChunk>
                 {

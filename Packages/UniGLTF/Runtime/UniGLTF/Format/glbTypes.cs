@@ -28,10 +28,11 @@ namespace UniGLTF
 
     public struct GlbChunk
     {
-        public GlbChunkType ChunkType => ChunkTypeString.ToChunkType();
+        public GlbChunkType ChunkType => ChunkTypeBytes.ToChunkType();
 
-        public string ChunkTypeString;
-        public ArraySegment<Byte> Bytes;
+        public string ChunkTypeString => Encoding.ASCII.GetString(ChunkTypeBytes.Span);
+        public ReadOnlyMemory<byte> Bytes;
+        public ReadOnlyMemory<byte> ChunkTypeBytes;
 
         public GlbChunk(string json) : this(
             GlbChunkType.JSON.ToChunkTypeString(),
@@ -49,7 +50,13 @@ namespace UniGLTF
 
         public GlbChunk(string chunkTypeString, ArraySegment<Byte> bytes)
         {
-            ChunkTypeString = chunkTypeString;
+            ChunkTypeBytes = Encoding.ASCII.GetBytes(chunkTypeString);
+            Bytes = bytes;
+        }
+
+        public GlbChunk(ReadOnlyMemory<byte> chunkTypeBytes, ReadOnlyMemory<byte> bytes)
+        {
+            ChunkTypeBytes = chunkTypeBytes;
             Bytes = bytes;
         }
 
@@ -60,12 +67,12 @@ namespace UniGLTF
 
         public static GlbChunk CreateJson(ArraySegment<byte> bytes)
         {
-            return new GlbChunk(GlbChunkType.JSON.ToChunkTypeString(), bytes);
+            return new GlbChunk(glbImporter.GLB_JSON_BYTES, bytes);
         }
 
         public static GlbChunk CreateBin(ArraySegment<Byte> bytes)
         {
-            return new GlbChunk(GlbChunkType.BIN.ToChunkTypeString(), bytes);
+            return new GlbChunk(glbImporter.GLB_BIN_BYTES, bytes);
         }
 
         byte GetPaddingByte()
@@ -87,11 +94,11 @@ namespace UniGLTF
         public int WriteTo(Stream s)
         {
             // padding
-            var paddingValue = Bytes.Count % 4;
+            var paddingValue = Bytes.Length % 4;
             var padding = (paddingValue > 0) ? 4 - paddingValue : 0;
 
             // size
-            var bytes = BitConverter.GetBytes((int)(Bytes.Count + padding));
+            var bytes = BitConverter.GetBytes((int)(Bytes.Length + padding));
             s.Write(bytes, 0, bytes.Length);
 
             // chunk type
@@ -116,7 +123,7 @@ namespace UniGLTF
             }
 
             // body
-            s.Write(Bytes.Array, Bytes.Offset, Bytes.Count);
+            s.Write(Bytes.Span);
 
             // 4byte align
             var pad = GetPaddingByte();
@@ -125,7 +132,7 @@ namespace UniGLTF
                 s.WriteByte(pad);
             }
 
-            return 4 + 4 + Bytes.Count + padding;
+            return 4 + 4 + Bytes.Length + padding;
         }
     }
 

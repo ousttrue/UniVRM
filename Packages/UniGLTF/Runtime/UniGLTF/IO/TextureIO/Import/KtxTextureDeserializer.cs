@@ -15,15 +15,16 @@ namespace UniGLTF
 #pragma warning restore 1998
         {
 #if USE_COM_UNITY_CLOUD_KTX
-            if (textureInfo.ImageData == null) return null;
+            if (!textureInfo.ImageData.IsCreated) return null;
 
             // NOTE: IAwaitCaller を無視するので、同期読み込みを期待する環境で同期読み込みができない
             try
             {
                 var ktxTexture = new KtxTexture();
-                using var nativeBytes = new NativeArray<byte>(textureInfo.ImageData, Allocator.Persistent);
+                // NOTE: GltfData が保持する NativeArray をそのまま渡す。
+                //       KtxUnity は Open() 内で同期的に読み取るだけで所有権を取らないため、コピー不要。
                 var result = await ktxTexture.LoadFromBytes(
-                    nativeBytes,
+                    textureInfo.ImageData,
                     linear: textureInfo.ColorSpace == ColorSpace.Linear,
                     mipChain: textureInfo.UseMipmap
                 );

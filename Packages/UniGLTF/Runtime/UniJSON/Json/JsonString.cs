@@ -357,7 +357,7 @@ namespace UniJSON
                                     var u = (u0 << 12) + (u1 << 8) + (u2 << 4) + u3;
                                     var utf8 = Utf8String.From(new string(new char[] { (char)u }));
                                     // var utf8 = Utf8String.From((int)u);
-                                    foreach (var x in utf8.Bytes)
+                                    foreach (var x in utf8.Bytes.Span)
                                     {
                                         Write(x);
                                     }

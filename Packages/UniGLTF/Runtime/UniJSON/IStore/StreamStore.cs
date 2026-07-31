@@ -62,6 +62,11 @@ namespace UniJSON
             m_w.Write(bytes.Array, bytes.Offset, bytes.Count);
         }
 
+        public void Write(ReadOnlySpan<byte> bytes)
+        {
+            m_s.Write(bytes);
+        }
+
 #region BigEndian
         public void WriteBigEndian(int value)
         {

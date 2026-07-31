@@ -11,7 +11,7 @@ namespace UniJSON
     {
         public static void WriteTo(this Utf8String src, Stream dst)
         {
-            dst.Write(src.Bytes.Array, src.Bytes.Offset, src.Bytes.Count);
+            dst.Write(src.Bytes.Span);
         }
 
         public static Utf8Iterator GetFirst(this Utf8String src)
@@ -23,10 +23,11 @@ namespace UniJSON
 
         public static bool TrySearchByte(this Utf8String src, Func<byte, bool> pred, out int pos)
         {
+            var span = src.Bytes.Span;
             pos = 0;
-            for (; pos < src.ByteLength; ++pos)
+            for (; pos < span.Length; ++pos)
             {
-                if (pred(src[pos]))
+                if (pred(span[pos]))
                 {
                     return true;
                 }
@@ -88,6 +89,7 @@ namespace UniJSON
 
         public static IEnumerable<Utf8String> Split(this Utf8String src, byte delimiter)
         {
+            var results = new List<Utf8String>();
             var start = 0;
             var p = new Utf8Iterator(src.Bytes);
             while (p.MoveNext())
@@ -96,11 +98,11 @@ namespace UniJSON
                 {
                     if (p.BytePosition - start == 0)
                     {
-                        yield return default(Utf8String);
+                        results.Add(default(Utf8String));
                     }
                     else
                     {
-                        yield return src.Subbytes(start, p.BytePosition - start);
+                        results.Add(src.Subbytes(start, p.BytePosition - start));
                     }
                     start = p.BytePosition + 1;
                 }
@@ -108,8 +110,9 @@ namespace UniJSON
 
             if (start < p.BytePosition)
             {
-                yield return src.Subbytes(start, p.BytePosition - start);
+                results.Add(src.Subbytes(start, p.BytePosition - start));
             }
+            return results;
         }
 
         #region atoi

@@ -67,6 +67,13 @@ namespace UniJSON
             m_used += buffer.Count;
         }
 
+        public void Push(ReadOnlyMemory<Byte> buffer)
+        {
+            Ensure(buffer.Length);
+            buffer.Span.CopyTo(new Span<Byte>(m_buffer, m_used, buffer.Length));
+            m_used += buffer.Length;
+        }
+
         public void Unshift(int size)
         {
             if (size > m_used)

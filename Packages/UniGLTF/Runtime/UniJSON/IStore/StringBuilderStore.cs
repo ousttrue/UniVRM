@@ -40,6 +40,11 @@ namespace UniJSON
             Write(text);
         }
 
+        public void Write(ReadOnlySpan<byte> bytes)
+        {
+            Write(Encoding.UTF8.GetString(bytes));
+        }
+
         public void Write(byte value)
         {
             throw new NotImplementedException();

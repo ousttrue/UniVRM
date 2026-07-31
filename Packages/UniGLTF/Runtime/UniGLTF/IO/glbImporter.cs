@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
+using Unity.Collections;
 
 
 namespace UniGLTF
@@ -10,6 +10,10 @@ namespace UniGLTF
     {
         public const string GLB_MAGIC = "glTF";
         public const float GLB_VERSION = 2.0f;
+
+        public static readonly ReadOnlyMemory<byte> GLB_MAGIC_BYTES = Encoding.ASCII.GetBytes(GLB_MAGIC);
+        public static readonly ReadOnlyMemory<byte> GLB_JSON_BYTES = BitConverter.GetBytes((uint)GlbChunkType.JSON);
+        public static readonly ReadOnlyMemory<byte> GLB_BIN_BYTES = BitConverter.GetBytes((uint)GlbChunkType.BIN);
 
         public static GlbChunkType ToChunkType(this string src)
         {
@@ -39,13 +43,28 @@ namespace UniGLTF
             }
         }
 
-        [Obsolete("Use ParseGlbChunks(bytes)")]
-        public static List<GlbChunk> ParseGlbChanks(Byte[] bytes)
+        public static GlbChunkType ToChunkType(this ReadOnlyMemory<byte> src)
         {
-            return ParseGlbChunks(bytes);
+            if (src.Length != 4)
+            {
+                throw new FormatException("invalid chunk type: " + src);
+            }
+            if (src.Span.SequenceEqual(GLB_JSON_BYTES.Span))
+            {
+                return GlbChunkType.JSON;
+            }
+            if (src.Span.SequenceEqual(GLB_BIN_BYTES.Span))
+            {
+                return GlbChunkType.BIN;
+            }
+            throw new FormatException("unknown chunk type: " + src);
         }
 
-        public static List<GlbChunk> ParseGlbChunks(Byte[] bytes)
+        public static List<GlbChunk> ParseGlbChanks(Byte[] bytes) => ParseGlbChunks(bytes);
+
+        public static List<GlbChunk> ParseGlbChanks(NativeArray<byte> bytes) => ParseGlbChunks(bytes.AsMemory());
+
+        public static List<GlbChunk> ParseGlbChunks(ReadOnlyMemory<byte> bytes)
         {
             //
             // glb header(12byte)
@@ -56,20 +75,20 @@ namespace UniGLTF
             }
 
             int pos = 0;
-            if (Encoding.ASCII.GetString(bytes, 0, 4) != GLB_MAGIC)
+            if (!bytes.Span.StartsWith(GLB_MAGIC_BYTES.Span))
             {
                 throw new GlbParseException("invalid magic");
             }
             pos += 4;
 
-            var version = BitConverter.ToUInt32(bytes, pos);
+            var version = BitConverter.ToUInt32(bytes[pos..].Span);
             if (version != GLB_VERSION)
             {
                 throw new GlbParseException($"unknown version: {version}");
             }
             pos += 4;
 
-            var totalLength = BitConverter.ToUInt32(bytes, pos);
+            var totalLength = BitConverter.ToUInt32(bytes[pos..].Span);
             if (bytes.Length < totalLength)
             {
                 throw new GlbParseException($"not enough size: {bytes.Length} < {totalLength}");
@@ -79,19 +98,13 @@ namespace UniGLTF
             var chunks = new List<GlbChunk>();
             while (pos < bytes.Length)
             {
-                var chunkDataSize = BitConverter.ToInt32(bytes, pos);
+                var chunkDataSize = BitConverter.ToInt32(bytes[pos..].Span);
                 pos += 4;
 
-                //var type = (GlbChunkType)BitConverter.ToUInt32(bytes, pos);
-                var chunkTypeBytes = bytes.Skip(pos).Take(4).Where(x => x != 0).ToArray();
-                var chunkTypeStr = Encoding.ASCII.GetString(chunkTypeBytes);
+                var chunkTypeBytes = bytes.Slice(pos, 4);
                 pos += 4;
 
-                chunks.Add(new GlbChunk
-                {
-                    ChunkTypeString = chunkTypeStr,
-                    Bytes = new ArraySegment<byte>(bytes, (int)pos, (int)chunkDataSize)
-                });
+                chunks.Add(new GlbChunk(chunkTypeBytes, bytes.Slice(pos, chunkDataSize)));
 
                 pos += chunkDataSize;
             }

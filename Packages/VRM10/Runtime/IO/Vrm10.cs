@@ -1,8 +1,8 @@
 ﻿using System;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using UniGLTF;
+using Unity.Collections;
 using UnityEngine;
 
 namespace UniVRM10
@@ -53,23 +53,34 @@ namespace UniVRM10
                 ? new RuntimeOnlyAwaitCaller()
                 : new ImmediateCaller();
 
-            using var gltfData = await awaitCaller.Run(() =>
+            NativeArray<byte> bytes = default;
+            try
             {
-                var bytes = File.ReadAllBytes(path);
-                return new GlbLowLevelParser(path, bytes).Parse();
-            });
-            return await LoadAsync(
-                gltfData,
-                canLoadVrm0X,
-                controlRigGenerationOption,
-                showMeshes,
-                awaitCaller,
-                textureDeserializer,
-                materialGenerator,
-                vrmMetaInformationCallback,
-                ct,
-                importerContextSettings,
-                springboneRuntime);
+                using var gltfData = await awaitCaller.Run(() =>
+                {
+                    bytes = NativeFile.ReadAllBytes(path);
+                    return GlbLowLevelParser.Parse(path, bytes);
+                });
+                return await LoadAsync(
+                    gltfData,
+                    canLoadVrm0X,
+                    controlRigGenerationOption,
+                    showMeshes,
+                    awaitCaller,
+                    textureDeserializer,
+                    materialGenerator,
+                    vrmMetaInformationCallback,
+                    ct,
+                    importerContextSettings,
+                    springboneRuntime);
+            }
+            finally
+            {
+                if (bytes.IsCreated)
+                {
+                    bytes.Dispose();
+                }
+            }
         }
 
         /// <summary>
@@ -89,8 +100,76 @@ namespace UniVRM10
         /// <param name="ct">CancellationToken</param>
         /// <param name="importerContextSettings">Importer context settings.</param>
         /// <returns>vrm-1.0 instance. Maybe return null if unexpected error was raised.</returns>
-        public static async Task<Vrm10Instance> LoadBytesAsync(
+        public static Task<Vrm10Instance> LoadBytesAsync(
             byte[] bytes,
+            bool canLoadVrm0X = true,
+            ControlRigGenerationOption controlRigGenerationOption = ControlRigGenerationOption.Generate,
+            bool showMeshes = true,
+            IAwaitCaller awaitCaller = null,
+            ITextureDeserializer textureDeserializer = null,
+            IMaterialDescriptorGenerator materialGenerator = null,
+            VrmMetaInformationCallback vrmMetaInformationCallback = null,
+            CancellationToken ct = default,
+            ImporterContextSettings importerContextSettings = null,
+            IVrm10SpringBoneRuntime springboneRuntime = null)
+        {
+            return LoadBytesAsync(
+                bytes.AsMemory(),
+                canLoadVrm0X,
+                controlRigGenerationOption,
+                showMeshes,
+                awaitCaller,
+                textureDeserializer,
+                materialGenerator,
+                vrmMetaInformationCallback,
+                ct,
+                importerContextSettings,
+                springboneRuntime);
+        }
+
+        /// <summary>
+        /// Load the VRM file from the NativeArray.
+        ///
+        /// The caller is responsible for disposing `bytes`. Do not dispose it until this task completes.
+        /// You should call this on Unity main thread.
+        /// This will throw Exceptions (include OperationCanceledException).
+        /// </summary>
+        public static Task<Vrm10Instance> LoadBytesAsync(
+            NativeArray<byte> bytes,
+            bool canLoadVrm0X = true,
+            ControlRigGenerationOption controlRigGenerationOption = ControlRigGenerationOption.Generate,
+            bool showMeshes = true,
+            IAwaitCaller awaitCaller = null,
+            ITextureDeserializer textureDeserializer = null,
+            IMaterialDescriptorGenerator materialGenerator = null,
+            VrmMetaInformationCallback vrmMetaInformationCallback = null,
+            CancellationToken ct = default,
+            ImporterContextSettings importerContextSettings = null,
+            IVrm10SpringBoneRuntime springboneRuntime = null)
+        {
+            return LoadBytesAsync(
+                bytes.AsMemory(),
+                canLoadVrm0X,
+                controlRigGenerationOption,
+                showMeshes,
+                awaitCaller,
+                textureDeserializer,
+                materialGenerator,
+                vrmMetaInformationCallback,
+                ct,
+                importerContextSettings,
+                springboneRuntime);
+        }
+
+        /// <summary>
+        /// Load the VRM file from the memory.
+        ///
+        /// The caller is responsible for keeping the underlying memory alive until this task completes.
+        /// You should call this on Unity main thread.
+        /// This will throw Exceptions (include OperationCanceledException).
+        /// </summary>
+        public static async Task<Vrm10Instance> LoadBytesAsync(
+            ReadOnlyMemory<byte> bytes,
             bool canLoadVrm0X = true,
             ControlRigGenerationOption controlRigGenerationOption = ControlRigGenerationOption.Generate,
             bool showMeshes = true,
@@ -106,7 +185,7 @@ namespace UniVRM10
                 ? new RuntimeOnlyAwaitCaller()
                 : new ImmediateCaller();
 
-            using var gltfData = await awaitCaller.Run(() => new GlbLowLevelParser(string.Empty, bytes).Parse());
+            using var gltfData = await awaitCaller.Run(() => GlbLowLevelParser.Parse("", bytes));
             return await LoadAsync(
                 gltfData,
                 canLoadVrm0X,

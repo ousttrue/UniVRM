@@ -66,7 +66,7 @@ namespace UniGLTF
             {
 
                 // glb header + 1st chunk only
-                var mod = bytes.Take(12 + 8 + data.Chunks[0].Bytes.Count).ToArray();
+                var mod = bytes.Take(12 + 8 + data.Chunks[0].Bytes.Length).ToArray();
 
                 Assert.Throws<GlbParseException>(() =>
                 {

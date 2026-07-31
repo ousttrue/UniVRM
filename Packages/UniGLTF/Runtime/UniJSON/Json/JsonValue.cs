@@ -6,10 +6,10 @@ namespace UniJSON
     public struct JsonValue
     {
         public Utf8String Segment;
-        public ArraySegment<Byte> Bytes { get { return Segment.Bytes; } }
+        public ReadOnlyMemory<Byte> Bytes { get { return Segment.Bytes; } }
         public void SetBytesCount(int count)
         {
-            Segment = new Utf8String(new ArraySegment<byte>(Bytes.Array, Bytes.Offset, count));
+            Segment = new Utf8String(Segment.Bytes.Slice(0, count));
         }
 
         public ValueNodeType ValueType

@@ -332,6 +332,11 @@ namespace UniJSON
             return AddValue(default(JsonValue).New(bytes, valueType, ValueIndex));
         }
 
+        public JsonNode AddValue(ReadOnlyMemory<byte> bytes, ValueNodeType valueType)
+        {
+            return AddValue(new JsonValue(new Utf8String(bytes), valueType, ValueIndex));
+        }
+
         public JsonNode AddValue(JsonValue value)
         {
             if (m_Values == null)
