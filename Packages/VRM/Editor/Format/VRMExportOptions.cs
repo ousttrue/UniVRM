@@ -53,7 +53,11 @@ namespace VRM
         KEEP_VERTEX_COLOR,
 
         [LangMsg(Languages.ja, "glTF Animationをエクスポートする。")]
-        [LangMsg(Languages.en, "export glTF animation.")]
+        [LangMsg(Languages.en, "Export glTF animation.")]
         EXPORT_GLTF_ANIMATION,
+
+        [LangMsg(Languages.ja, "RuntimeTextureSerializerを使う。")]
+        [LangMsg(Languages.en, "Use RuntimeTextureSerializer.")]
+        USE_RUNTIME_TEXTURE_SERIALIZER,
     }
 }

@@ -67,6 +67,12 @@ namespace VRM
         [Tooltip("Keep animation")]
         public bool KeepAnimation = false;
 
+        /// <summary>
+        /// Export時にRuntimeTextureSerializerを使う
+        /// </summary>
+        [Tooltip("Use RuntimeTextureSerializer")]
+        public bool UseRuntimeTextureSerializer = false;
+
         public GltfExportSettings GltfExportSettings => new GltfExportSettings
         {
             UseSparseAccessorForMorphTarget = UseSparseAccessor,
