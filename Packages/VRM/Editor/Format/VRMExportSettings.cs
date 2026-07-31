@@ -68,10 +68,10 @@ namespace VRM
         public bool KeepAnimation = false;
 
         /// <summary>
-        /// Export時にTexture設定を変更しない
+        /// Export時にRuntimeTextureSerializerを使う
         /// </summary>
-        [Tooltip("Keep texture configuration")]
-        public bool KeepTextureAssetConfiguration = false;
+        [Tooltip("Use RuntimeTextureSerializer")]
+        public bool UseRuntimeTextureSerializer = false;
 
         public GltfExportSettings GltfExportSettings => new GltfExportSettings
         {

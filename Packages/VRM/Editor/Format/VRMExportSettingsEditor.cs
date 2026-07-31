@@ -56,7 +56,7 @@ namespace VRM
             m_checkbox_list.Add(new CheckBoxProp(serializedObject.FindProperty(nameof(VRMExportSettings.DivideVertexBuffer)), VRMExportOptions.DIVIDE_VERTEX_BUFFER));
             m_checkbox_list.Add(new CheckBoxProp(serializedObject.FindProperty(nameof(VRMExportSettings.KeepVertexColor)), VRMExportOptions.KEEP_VERTEX_COLOR));
             m_checkbox_list.Add(new CheckBoxProp(serializedObject.FindProperty(nameof(VRMExportSettings.KeepAnimation)), VRMExportOptions.EXPORT_GLTF_ANIMATION));
-            m_checkbox_list.Add(new CheckBoxProp(serializedObject.FindProperty(nameof(VRMExportSettings.KeepTextureAssetConfiguration)), VRMExportOptions.KEEP_TEXTURE_ASSET_CONFIGURATION));
+            m_checkbox_list.Add(new CheckBoxProp(serializedObject.FindProperty(nameof(VRMExportSettings.UseRuntimeTextureSerializer)), VRMExportOptions.USE_RUNTIME_TEXTURE_SERIALIZER));
         }
 
 

@@ -56,8 +56,8 @@ namespace VRM
         [LangMsg(Languages.en, "Export glTF animation.")]
         EXPORT_GLTF_ANIMATION,
 
-        [LangMsg(Languages.ja, "テクスチャーアセット設定を変更しない。")]
-        [LangMsg(Languages.en, "Keep texture asset configuration.")]
-        KEEP_TEXTURE_ASSET_CONFIGURATION,
+        [LangMsg(Languages.ja, "RuntimeTextureSerializerを使う。")]
+        [LangMsg(Languages.en, "Use RuntimeTextureSerializer.")]
+        USE_RUNTIME_TEXTURE_SERIALIZER,
     }
 }
