@@ -685,7 +685,7 @@ namespace UniVRM10
         private static bool VRMC_springBone_limit_Validate(Transform node, VRMC_springBone_limit extensionSpringBoneLimit)
         {
             var validate = true;
-            if (extensionSpringBoneLimit.SpecVersion != "1.0-draft")
+            if (extensionSpringBoneLimit.SpecVersion != Vrm10Exporter.VRMC_springBone_limit_SPEC_VERSION)
             {
                 UniGLTFLogger.Warning($"Unknown VRMC_springBone_limit specVersion: {extensionSpringBoneLimit.SpecVersion}");
             }
