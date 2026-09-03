@@ -13,7 +13,7 @@ namespace UniGLTF.SpringBoneJobs
             limitAngle = math.clamp(limitAngle, 0.0f, math.PI);
 
             var projectedLengthSquared = tailDir.y * tailDir.y + tailDir.z * tailDir.z;
-            if (projectedLengthSquared == 0.0f)
+            if (projectedLengthSquared <= Anglelimit.SINGULARITY_EPSILON)
             {
                 // tailDirがx軸正方向または負方向の場合、Y軸正方向を選択する
                 tailDir = math.float3(0.0f, 1.0f, 0.0f);
@@ -30,7 +30,7 @@ namespace UniGLTF.SpringBoneJobs
                 {
                     var sinLimitAngle = math.sqrt(1.0f - cosLimitAngle * cosLimitAngle);
 
-                    // tailDirがy軸負方向の場合、z軸正方向側を選択する
+                    // zの符号を維持し、z==0 の場合は z軸正方向側を選択する
                     var zSign = (tailDir.z < 0.0f) ? -1.0f : 1.0f;
                     tailDir.y = cosLimitAngle;
                     tailDir.z = sinLimitAngle * zSign;

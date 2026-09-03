@@ -1,6 +1,4 @@
-using System;
 using Unity.Mathematics;
-using UnityEngine;
 
 namespace UniGLTF.SpringBoneJobs
 {
@@ -18,12 +16,12 @@ namespace UniGLTF.SpringBoneJobs
 
             // tailDirのpitch・yawを計算する
             float pitch;
-            if (tailDir.y == -1.0)
+            if (tailDir.y <= -1.0 + Anglelimit.SINGULARITY_EPSILON)
             {
                 // tailDirがy軸負方向の場合、Z軸正方向側の境界を選択するため、pitchをπとする
                 pitch = math.PI;
             }
-            else if (math.abs(tailDir.x) == 1.0f)
+            else if (math.abs(tailDir.x) <= 1.0f - Anglelimit.SINGULARITY_EPSILON)
             {
                 // tailDirがx軸正方向または負方向の場合、pitchを0とする
                 pitch = 0.0f;
@@ -32,7 +30,7 @@ namespace UniGLTF.SpringBoneJobs
             {
                 pitch = math.atan2(tailDir.z, tailDir.y);
             }
-            var yaw = math.asin(tailDir.x);
+            var yaw = math.asin(math.clamp(tailDir.x, -1f, 1f));
 
             // pitchをlimitに設定されたpitchを用いて制限する
             if (math.abs(pitch) > limitPitch)

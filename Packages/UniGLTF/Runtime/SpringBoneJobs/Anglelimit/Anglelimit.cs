@@ -1,3 +1,4 @@
+using System;
 using UniGLTF.SpringBoneJobs.Blittables;
 using Unity.Mathematics;
 
@@ -5,6 +6,8 @@ namespace UniGLTF.SpringBoneJobs
 {
     public static class Anglelimit
     {
+        public static readonly float SINGULARITY_EPSILON = MathF.Sqrt(float.Epsilon);
+
         public static float3 Apply(
             in BlittableJointImmutable logic,
             in BlittableJointMutable joint,
@@ -83,7 +86,7 @@ namespace UniGLTF.SpringBoneJobs
             // headからtailに向かうベクトルとY+方向との内積
             var dot = boneAxis.y;
 
-            if (dot == -1.0)
+            if (dot <= -1f + SINGULARITY_EPSILON)
             {
                 // headからtailに向かうベクトルがY-方向の場合、X軸周りに180度回転させた回転を設定する
                 return new quaternion(1, 0, 0, 0);
