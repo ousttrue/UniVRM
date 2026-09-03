@@ -480,6 +480,7 @@ namespace UniVRM10
                         {
                             var limit = new UniGLTF.Extensions.VRMC_springBone_limit.VRMC_springBone_limit
                             {
+                                SpecVersion = VRMC_springBone_limit_SPEC_VERSION,
                                 Limit = new UniGLTF.Extensions.VRMC_springBone_limit.Limit
                                 {
                                     Hinge = new UniGLTF.Extensions.VRMC_springBone_limit.HingeLimit
@@ -498,6 +499,7 @@ namespace UniVRM10
                         {
                             var limit = new UniGLTF.Extensions.VRMC_springBone_limit.VRMC_springBone_limit
                             {
+                                SpecVersion = VRMC_springBone_limit_SPEC_VERSION,
                                 Limit = new UniGLTF.Extensions.VRMC_springBone_limit.Limit
                                 {
                                     Spherical = new UniGLTF.Extensions.VRMC_springBone_limit.SphericalLimit
