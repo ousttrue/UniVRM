@@ -38,8 +38,8 @@ namespace UniGLTF.SpringBoneJobs.Blittables
         public float anglelimit2 => _data.c2.z;
         public quaternion anglelimitOffset => _data.c3.xyzw;
 
-        /// <param name="angleLimit1">pitch when Spherical</param>
-        /// <param name="angleLimit2">yaw when Spherical</param>
+        // angleLimit1: angle (Cone/Hinge), pitch (Spherical)
+        // angleLimit2: yaw (Spherical)
         public BlittableJointMutable(float stiffnessForce = 0,
             float gravityPower = 0,
             float3 gravityDir = default,
