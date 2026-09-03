@@ -19,7 +19,7 @@ namespace UniGLTF.SpringBoneJobs
                 // x・z要素を、tailDirの正弦とjointに設定されたangleの正弦の比を用いてスケールする
                 var horizontalLengthSquared = 1.0f - tailDir.y * tailDir.y;
 
-                if (horizontalLengthSquared == 0.0)
+                if (horizontalLengthSquared <= 1e-8f)
                 {
                     // tailDirがy軸負方向の場合、z軸正方向側を選択する
                     tailDir.x = 0.0f;
