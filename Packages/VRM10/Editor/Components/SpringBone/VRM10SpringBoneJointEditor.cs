@@ -98,34 +98,32 @@ namespace UniVRM10
             {
                 EditorGUILayout.HelpBox("SpringBoneの角度制限はまだdraft仕様です。将来的に仕様が変更される可能性があります。\nThe angle limit feature for SpringBone is still in draft status. The specifications may change in the future.", MessageType.Warning);
 
+
                 if (isLastTail)
                 {
                     EditorGUILayout.HelpBox("末端ノードでは無効です。", MessageType.Warning);
                 }
-                else
+                EditorGUILayout.PropertyField(m_angleLimitType);
+                switch ((UniGLTF.SpringBoneJobs.AnglelimitTypes)m_angleLimitType.enumValueIndex)
                 {
-                    EditorGUILayout.PropertyField(m_angleLimitType);
-                    switch ((UniGLTF.SpringBoneJobs.AnglelimitTypes)m_angleLimitType.enumValueIndex)
-                    {
-                        case UniGLTF.SpringBoneJobs.AnglelimitTypes.None:
-                            break;
+                    case UniGLTF.SpringBoneJobs.AnglelimitTypes.None:
+                        break;
 
-                        case UniGLTF.SpringBoneJobs.AnglelimitTypes.Cone:
-                            EditorGUILayout.PropertyField(m_angleLimitRotation);
-                            EditorGUILayout.PropertyField(m_angleLimitPitch, new GUIContent("Angle"));
-                            break;
+                    case UniGLTF.SpringBoneJobs.AnglelimitTypes.Cone:
+                        EditorGUILayout.PropertyField(m_angleLimitRotation);
+                        EditorGUILayout.PropertyField(m_angleLimitPitch, new GUIContent("Angle"));
+                        break;
 
-                        case UniGLTF.SpringBoneJobs.AnglelimitTypes.Hinge:
-                            EditorGUILayout.PropertyField(m_angleLimitRotation);
-                            EditorGUILayout.PropertyField(m_angleLimitPitch, new GUIContent("Angle"));
-                            break;
+                    case UniGLTF.SpringBoneJobs.AnglelimitTypes.Hinge:
+                        EditorGUILayout.PropertyField(m_angleLimitRotation);
+                        EditorGUILayout.PropertyField(m_angleLimitPitch, new GUIContent("Angle"));
+                        break;
 
-                        case UniGLTF.SpringBoneJobs.AnglelimitTypes.Spherical:
-                            EditorGUILayout.PropertyField(m_angleLimitRotation);
-                            EditorGUILayout.PropertyField(m_angleLimitPitch);
-                            EditorGUILayout.PropertyField(m_angleLimitYaw);
-                            break;
-                    }
+                    case UniGLTF.SpringBoneJobs.AnglelimitTypes.Spherical:
+                        EditorGUILayout.PropertyField(m_angleLimitRotation);
+                        EditorGUILayout.PropertyField(m_angleLimitPitch);
+                        EditorGUILayout.PropertyField(m_angleLimitYaw);
+                        break;
                 }
             }
 
