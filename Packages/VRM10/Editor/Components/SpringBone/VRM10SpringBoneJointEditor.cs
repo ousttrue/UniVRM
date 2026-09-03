@@ -101,7 +101,7 @@ namespace UniVRM10
 
                 if (isLastTail)
                 {
-                    EditorGUILayout.HelpBox("末端ノードでは無効です。", MessageType.Warning);
+                    EditorGUILayout.HelpBox("末端ノードではAngleLimitは無視されます。", MessageType.Info);
                 }
                 EditorGUILayout.PropertyField(m_angleLimitType);
                 switch ((UniGLTF.SpringBoneJobs.AnglelimitTypes)m_angleLimitType.enumValueIndex)
