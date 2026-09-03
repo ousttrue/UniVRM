@@ -725,7 +725,7 @@ namespace UniVRM10
             if (node.childCount == 0)
             {
                 // leaf
-                UniGLTFLogger.Warning($"VRMC_springBone_limit: Leaf node cannot. skip");
+                UniGLTFLogger.Warning($"VRMC_springBone_limit: leaf node '{node.name}' must not have limit. skip");
                 validate = false;
             }
 
